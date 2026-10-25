@@ -86,9 +86,16 @@ export default function Navbar() {
               <Link
                 href="/signin"
                 id="navbar-login-cta"
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-200 shadow-sm shadow-indigo-200"
+                className="px-3.5 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
               >
                 Sign In
+              </Link>
+              <Link
+                href="/signup"
+                id="navbar-signup-cta"
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-200 shadow-sm shadow-indigo-200"
+              >
+                Get Started
               </Link>
             </div>
 

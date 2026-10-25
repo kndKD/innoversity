@@ -139,6 +139,12 @@ export default function SellerDashboardPage() {
 
           <div className="flex items-center gap-3">
             <Link
+              href="/onboarding"
+              className="px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs transition-all flex items-center gap-1.5"
+            >
+              <ShieldCheck size={14} /> KYC Verification
+            </Link>
+            <Link
               href="/list-innovation"
               className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-200 transition-all flex items-center gap-1.5"
             >
