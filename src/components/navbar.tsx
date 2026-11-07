@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 import {
   ShoppingBag,
   Search,
@@ -52,18 +52,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 shrink-0" id="navbar-logo">
-              <Image
-                src="/logo.png"
-                alt="Innoversity"
-                width={54}
-                height={36}
-                priority
-                className="h-9 w-auto object-contain rounded-md"
-              />
-              <span className="font-black text-xl tracking-tight bg-gradient-to-r from-indigo-700 to-violet-600 bg-clip-text text-transparent">
-                Innoversity
-              </span>
+            <Link href="/" className="shrink-0" id="navbar-logo">
+              <Logo className="w-8 h-8 text-indigo-600" textColor="text-slate-900" />
             </Link>
 
             {/* Desktop Nav Links */}

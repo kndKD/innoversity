@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 import { Share2, ExternalLink, Globe, Mail, Check, X } from "lucide-react";
 
 const footerLinks = [
@@ -87,18 +87,8 @@ export default function Footer() {
         <div className="py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 border-b border-[#1E2240]">
           {/* Brand column */}
           <div className="lg:col-span-1 flex flex-col gap-5">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/logo.png"
-                alt="Innoversity"
-                width={54}
-                height={36}
-                priority
-                className="h-9 w-auto object-contain rounded-md"
-              />
-              <span className="text-xl font-black text-white tracking-tight">
-                Innoversity
-              </span>
+            <Link href="/" className="shrink-0">
+              <Logo className="w-8 h-8 text-white" textColor="text-white" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500">
               Sri Lanka&rsquo;s Verified Innovation Marketplace — connecting student
