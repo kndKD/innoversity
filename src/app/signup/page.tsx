@@ -252,11 +252,6 @@ export default function SignUpPage() {
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Email Address
-                {role === "seller" && (
-                  <span className="text-[11px] font-normal text-indigo-600 ml-1.5">
-                    (.ac.lk university email recommended)
-                  </span>
-                )}
               </label>
               <div className="relative">
                 <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
