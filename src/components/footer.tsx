@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Share2, ExternalLink, Globe, Mail, Check, X } from "lucide-react";
 
 const footerLinks = [
@@ -87,9 +88,14 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1 flex flex-col gap-5">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-900/40">
-                <span className="text-white font-black text-sm">IV</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Innoversity"
+                width={54}
+                height={36}
+                priority
+                className="h-9 w-auto object-contain rounded-md"
+              />
               <span className="text-xl font-black text-white tracking-tight">
                 Innoversity
               </span>
