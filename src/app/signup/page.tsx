@@ -263,14 +263,10 @@ export default function SignUpPage() {
                 <input
                   type="email"
                   required
-                  placeholder={
-                    role === "seller"
-                      ? "kasun@itum.mrt.ac.lk or your@email.com"
-                      : "procurement@company.lk"
-                  }
+                  placeholder="name@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-gray-900 bg-white"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-gray-900 bg-white placeholder:text-gray-400"
                 />
               </div>
             </div>
