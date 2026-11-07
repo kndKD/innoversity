@@ -1,9 +1,15 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShieldCheck, MapPin, Lock, Star, ArrowUpRight } from "lucide-react";
+import { ShieldCheck, MapPin, Lock, Star, ArrowUpRight, Clock, AlertCircle } from "lucide-react";
 import type { Product } from "@/lib/mock-data";
 import { clsx } from "clsx";
+import {
+  getSellerVerificationDetails,
+  subscribeToVerification,
+} from "@/lib/verification-store";
+import type { VerificationStatus } from "@/lib/supabase";
 
 interface ProductCardProps {
   product: Product;
@@ -29,6 +35,48 @@ function categoryEmoji(category: string): string {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  // Dynamic verification state
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("approved");
+  const [endorsingInstitution, setEndorsingInstitution] = useState<string>(product.verifierInstitution);
+
+  useEffect(() => {
+    // Check initial status
+    const details = getSellerVerificationDetails({
+      sellerName: product.sellerName,
+      shopName: product.sellerName,
+    });
+
+    if (details) {
+      setVerificationStatus(details.verification_status);
+      if (details.institution_or_business) {
+        setEndorsingInstitution(details.institution_or_business);
+      }
+    } else {
+      // Default to approved if mock item is verifiedAt
+      setVerificationStatus(product.verifiedAt ? "approved" : "pending");
+    }
+
+    // Subscribe to real-time verifier portal approvals
+    const unsubscribe = subscribeToVerification((profiles) => {
+      const match = profiles.find(
+        (p) =>
+          p.applicant_name.toLowerCase().trim() === product.sellerName.toLowerCase().trim() ||
+          p.shop_name.toLowerCase().trim() === product.sellerName.toLowerCase().trim()
+      );
+      if (match) {
+        setVerificationStatus(match.verification_status);
+        if (match.institution_or_business) {
+          setEndorsingInstitution(match.institution_or_business);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [product.sellerName, product.verifiedAt]);
+
+  const isApproved =
+    verificationStatus === "approved" || verificationStatus === "admin_approved";
+
   return (
     <Link
       href={`/innovations/${product.id}`}
@@ -87,10 +135,15 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* ── Card Body ────────────────────────────────────────────────── */}
         <div className="flex flex-col flex-1 p-4 gap-3">
-          {/* District */}
-          <div className="flex items-center gap-1 text-gray-400 text-xs">
-            <MapPin size={11} strokeWidth={2} />
-            <span>{product.district} District</span>
+          {/* District & Seller */}
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <div className="flex items-center gap-1">
+              <MapPin size={11} strokeWidth={2} />
+              <span>{product.district} District</span>
+            </div>
+            <span className="text-[11px] font-medium text-gray-500 truncate max-w-[130px]">
+              {product.sellerName}
+            </span>
           </div>
 
           {/* Title */}
@@ -103,13 +156,31 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.storySnippet}
           </p>
 
-          {/* Verified badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100 w-fit max-w-full">
-            <ShieldCheck size={13} className="text-emerald-600 shrink-0" strokeWidth={2.5} />
-            <span className="text-emerald-700 text-xs font-semibold truncate">
-              {product.verifierInstitution}
-            </span>
-          </div>
+          {/* ── Dynamic Verified Creator Badge ── */}
+          {isApproved ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 w-fit max-w-full shadow-2xs">
+              <ShieldCheck size={14} className="text-emerald-600 shrink-0" strokeWidth={2.5} />
+              <div className="flex items-center gap-1 truncate text-xs">
+                <span className="font-black text-emerald-800">Verified Creator</span>
+                <span className="text-emerald-600 text-[10px]">·</span>
+                <span className="text-emerald-700 font-semibold truncate">{endorsingInstitution}</span>
+              </div>
+            </div>
+          ) : verificationStatus === "pending" ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200/80 w-fit max-w-full">
+              <Clock size={13} className="text-amber-600 shrink-0" />
+              <span className="text-amber-800 text-xs font-semibold truncate">
+                ⏳ KYC Review Pending · {endorsingInstitution}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-50 border border-red-200/80 w-fit max-w-full">
+              <AlertCircle size={13} className="text-red-500 shrink-0" />
+              <span className="text-red-700 text-xs font-semibold truncate">
+                Audit Required
+              </span>
+            </div>
+          )}
 
           {/* Bottom row: rating + price */}
           <div className="flex items-center justify-between pt-1 border-t border-gray-50">

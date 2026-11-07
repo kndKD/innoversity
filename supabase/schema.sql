@@ -27,15 +27,24 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
 CREATE TABLE IF NOT EXISTS public.seller_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+  shop_name TEXT,
+  shop_category TEXT,
+  shop_bio TEXT,
+  applicant_name TEXT,
   institution_or_business TEXT NOT NULL,
   district TEXT NOT NULL,
   verification_status TEXT NOT NULL DEFAULT 'pending' 
-    CHECK (verification_status IN ('pending', 'approved', 'rejected')),
+    CHECK (verification_status IN ('pending', 'verifier_approved', 'admin_approved', 'approved', 'rejected')),
   nic_number TEXT NOT NULL, -- Stored masked for privacy (e.g. 2001****5678 or XXXXXX-XXX-4821)
   document_url TEXT NOT NULL, -- URL to uploaded student ID / BR Certificate
+  document_type TEXT, -- 'student_id' | 'enrollment_letter' | 'br_certificate'
   submitted_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  verifier_approved_at TIMESTAMP WITH TIME ZONE,
+  admin_approved_at TIMESTAMP WITH TIME ZONE,
   reviewed_at TIMESTAMP WITH TIME ZONE,
   reviewed_by UUID REFERENCES public.users(id),
+  verifier_email TEXT,
+  notification_sent_at TIMESTAMP WITH TIME ZONE,
   notes TEXT
 );
 

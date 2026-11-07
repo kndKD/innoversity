@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { mockProducts } from "@/lib/mock-data";
+import {
+  getSellerVerificationDetails,
+  subscribeToVerification,
+} from "@/lib/verification-store";
 import {
   ShieldCheck,
   MapPin,
@@ -57,6 +61,33 @@ function ProductDetailContent() {
     product.isService ? "milestones" : "story"
   );
   const [copied, setCopied] = useState(false);
+  const [isVerified, setIsVerified] = useState(true);
+  const [institutionName, setInstitutionName] = useState(product.verifierInstitution);
+
+  useEffect(() => {
+    const details = getSellerVerificationDetails({
+      sellerName: product.sellerName,
+      shopName: product.sellerName,
+    });
+    if (details) {
+      setIsVerified(details.verification_status === "approved");
+      if (details.institution_or_business) setInstitutionName(details.institution_or_business as any);
+    }
+
+    const unsubscribe = subscribeToVerification((profiles) => {
+      const match = profiles.find(
+        (p) =>
+          p.applicant_name.toLowerCase().trim() === product.sellerName.toLowerCase().trim() ||
+          p.shop_name.toLowerCase().trim() === product.sellerName.toLowerCase().trim()
+      );
+      if (match) {
+        setIsVerified(match.verification_status === "approved");
+        if (match.institution_or_business) setInstitutionName(match.institution_or_business as any);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [product.sellerName]);
 
   const handleShare = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -149,31 +180,58 @@ function ProductDetailContent() {
             </div>
 
             {/* Academic / BR Verification Proof Card */}
-            <div className="bg-white rounded-3xl border border-emerald-100 p-6 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -z-0" />
+            <div
+              className={`rounded-3xl border p-6 shadow-sm relative overflow-hidden transition-all ${
+                isVerified ? "bg-white border-emerald-100" : "bg-amber-50/50 border-amber-200"
+              }`}
+            >
+              <div
+                className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -z-0 ${
+                  isVerified ? "bg-emerald-50" : "bg-amber-100"
+                }`}
+              />
               <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                  <div
+                    className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
+                      isVerified
+                        ? "bg-emerald-500/10 border-emerald-200 text-emerald-600"
+                        : "bg-amber-500/10 border-amber-200 text-amber-600"
+                    }`}
+                  >
                     <ShieldCheck size={24} strokeWidth={2.5} />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-600">
-                      Institutional Credential
+                    <span
+                      className={`text-[10px] font-bold tracking-widest uppercase ${
+                        isVerified ? "text-emerald-600" : "text-amber-700"
+                      }`}
+                    >
+                      {isVerified ? "Institutional Credential" : "Verification Status"}
                     </span>
                     <h3 className="text-base font-black text-gray-900">
-                      {product.verifierInstitution}
+                      {institutionName}
                     </h3>
                   </div>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-                  <FileCheck size={14} /> Verified On {product.verifiedAt}
+                <div
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${
+                    isVerified
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-amber-50 text-amber-800 border-amber-200"
+                  }`}
+                >
+                  <FileCheck size={14} />
+                  <span>{isVerified ? "✓ Verified Creator Active" : "⏳ Pending Auditor Review"}</span>
                 </div>
               </div>
 
               <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-xs">
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <p className="text-gray-400 font-medium">Verification Status</p>
-                  <p className="font-bold text-emerald-700 mt-0.5">Faculty / BR Certified</p>
+                  <p className={`font-bold mt-0.5 ${isVerified ? "text-emerald-700" : "text-amber-700"}`}>
+                    {isVerified ? "Faculty / BR Certified" : "Pending Audit"}
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <p className="text-gray-400 font-medium">Privacy Protection</p>

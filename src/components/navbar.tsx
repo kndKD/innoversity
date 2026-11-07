@@ -16,7 +16,6 @@ import {
 const navLinks = [
   { label: "Marketplace", href: "/#marketplace" },
   { label: "Innovations", href: "/innovations" },
-  { label: "IT Solutions", href: "/innovations?category=IT+Solutions+%26+Services" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Verifiers", href: "/verifiers" },
 ];

@@ -2,7 +2,12 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 // User and Seller types
 export type UserRole = "buyer" | "seller" | "verifier" | "admin";
-export type VerificationStatus = "pending" | "approved" | "rejected";
+export type VerificationStatus =
+  | "pending"
+  | "verifier_approved"
+  | "admin_approved"
+  | "approved"
+  | "rejected";
 
 export interface DbUser {
   id: string;
@@ -16,14 +21,23 @@ export interface DbUser {
 export interface DbSellerProfile {
   id?: string;
   user_id: string;
+  shop_name?: string;
+  shop_category?: string;
+  shop_bio?: string;
+  applicant_name?: string;
   institution_or_business: string;
   district: string;
   verification_status: VerificationStatus;
   nic_number: string; // Masked for privacy
   document_url: string;
+  document_type?: string;
   submitted_at: string;
   reviewed_at?: string | null;
   reviewed_by?: string | null;
+  verifier_approved_at?: string | null;
+  admin_approved_at?: string | null;
+  verifier_email?: string | null;
+  notification_sent_at?: string | null;
   notes?: string | null;
 }
 
