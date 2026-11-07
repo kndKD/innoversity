@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Star } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ShieldCheck, Star, CheckCircle2 } from "lucide-react";
 
 export default function HeroSection() {
   return (
@@ -119,93 +120,102 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* ── Right: FocusFlow Showcase Card ────────────────── */}
+          {/* ── Right: Innovation Prototype Showcase Card ───────── */}
           <div className="flex justify-center lg:justify-end animate-fade-in-up animation-delay-200">
-            <div className="relative w-full max-w-sm">
-              {/* Floating accent dots */}
-              <div aria-hidden className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-indigo-100 blur-2xl opacity-80" />
-              <div aria-hidden className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-violet-100 blur-2xl opacity-80" />
+            <div className="relative w-full max-w-sm sm:max-w-md">
+              {/* Floating accent glows */}
+              <div aria-hidden className="absolute -top-6 -right-6 w-36 h-36 rounded-full bg-indigo-200/50 blur-3xl pointer-events-none" />
+              <div aria-hidden className="absolute -bottom-6 -left-6 w-36 h-36 rounded-full bg-violet-200/50 blur-3xl pointer-events-none" />
 
-              {/* Dark showcase card */}
-              <div className="relative rounded-3xl bg-[#080911] border border-[#1E2240] shadow-2xl shadow-indigo-900/30 overflow-hidden">
+              {/* Floating micro-badge: Top-Left "⚡ Domex Tracked" */}
+              <div className="absolute -top-3.5 -left-2 sm:-left-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg shadow-slate-200/50 text-xs font-bold text-slate-800">
+                <span className="text-amber-500">⚡</span>
+                <span>Domex Tracked</span>
+              </div>
 
-                {/* Card top gradient strip */}
-                <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500" />
+              {/* Floating micro-badge: Bottom-Right "🛡️ Zero-Fraud Guarantee" */}
+              <div className="absolute -bottom-3.5 -right-2 sm:-right-4 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg shadow-slate-200/50 text-xs font-bold text-slate-800">
+                <ShieldCheck size={14} className="text-emerald-600" />
+                <span>Zero-Fraud Guarantee</span>
+              </div>
 
-                <div className="p-6 flex flex-col gap-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className="text-[10px] font-bold text-indigo-400 tracking-widest uppercase">
-                        Featured Innovation
+              {/* Light Glassmorphism Card */}
+              <div className="relative bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-2xl rounded-3xl p-4 sm:p-5 transition-all duration-300 hover:shadow-indigo-100/70 hover:border-slate-300">
+                {/* Image Display Area */}
+                <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 shadow-inner">
+                  <Image
+                    src="/innovations/hero-proto.jpg"
+                    alt="IoT Micro-Climate Smart Sensor Prototype"
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                  {/* Subtle vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Corner Status Pill: 🟢 Live Working Prototype */}
+                  <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Live Working Prototype</span>
+                  </div>
+
+                  {/* Category chip top-right */}
+                  <div className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-bold text-indigo-700 uppercase tracking-wider shadow-sm">
+                    IoT Hardware
+                  </div>
+                </div>
+
+                {/* Content below photo */}
+                <div className="pt-4 flex flex-col gap-3">
+                  {/* Title & Creator */}
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                      IoT Micro-Climate Smart Sensor
+                    </h2>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+                      <span className="inline-flex items-center text-indigo-600 font-semibold">
+                        <CheckCircle2 size={13} className="text-indigo-600 mr-1" />
+                        Verified Creator
                       </span>
-                      <h2 className="mt-1 text-xl font-black text-white leading-tight">
-                        FocusFlow Planner System
-                      </h2>
-                      <p className="mt-1 text-xs text-gray-400">
-                        by A. Fernando — UoC Psychology
-                      </p>
-                    </div>
-                    <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-fuchsia-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-900/40">
-                      📓
+                      <span>·</span>
+                      <span className="text-slate-500">University of Moratuwa</span>
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    Research-backed A5 productivity planner for Sri Lankan university
-                    students. Sinhala &amp; English. 24-week semester format.
-                  </p>
-
-                  {/* Badges row */}
-                  <div className="flex flex-wrap gap-2">
-                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-900/50 border border-emerald-700/50 text-emerald-400 text-xs font-semibold">
-                      <ShieldCheck size={11} strokeWidth={2.5} />
-                      University of Colombo
+                  {/* Quick specs pill row */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium border border-slate-200/60">
+                      ESP32 · Solar Powered
                     </span>
-                    <span className="px-2.5 py-1 rounded-full bg-[#1E2240] text-gray-400 text-xs font-medium border border-[#2A3060]">
-                      Colombo District
-                    </span>
-                    <span className="px-2.5 py-1 rounded-full bg-[#1E2240] text-gray-400 text-xs font-medium border border-[#2A3060]">
-                      Productivity
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200/60 flex items-center gap-1">
+                      <ShieldCheck size={12} className="text-emerald-600" />
+                      Audited
                     </span>
                   </div>
 
-                  {/* Stats row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: "Units Sold", value: "834" },
-                      { label: "Rating", value: "4.7 ★" },
-                      { label: "Reviews", value: "112" },
-                    ].map((item) => (
-                      <div key={item.label} className="flex flex-col gap-0.5 bg-[#0F1120] rounded-xl p-2.5 border border-[#1E2240]">
-                        <span className="text-base font-black text-white">{item.value}</span>
-                        <span className="text-[10px] text-gray-500">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Price + CTA */}
-                  <div className="flex items-center justify-between pt-1">
+                  {/* Price & Primary CTA Button */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                     <div>
-                      <span className="text-2xl font-black text-white">Rs. 1,850</span>
-                      <p className="text-xs text-gray-500 mt-0.5">per planner unit</p>
+                      <span className="text-2xl font-black text-slate-900 tracking-tight">
+                        Rs. 24,500
+                      </span>
+                      <div className="flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100 text-[11px] font-semibold text-indigo-700 w-fit">
+                        <ShieldCheck size={11} className="text-indigo-600" />
+                        7-Day Escrow Protected
+                      </div>
                     </div>
+
                     <Link
-                      href="/orders/ORD-2026-01"
-                      id="hero-card-buy-btn"
-                      className="inline-flex items-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition-colors duration-200 shadow-lg shadow-indigo-900/40"
+                      href="/innovations/1"
+                      id="hero-inspect-prototype-cta"
+                      className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-200 hover:shadow-indigo-300 transition-all duration-200 shrink-0"
                     >
-                      Buy Now
+                      Inspect Prototype
+                      <ArrowRight size={14} />
                     </Link>
                   </div>
                 </div>
-              </div>
-
-              {/* Floating notification chip */}
-              <div className="absolute -top-3 -left-3 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-lg border border-gray-100 text-xs font-semibold text-gray-700 whitespace-nowrap">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                834 sold this semester
               </div>
             </div>
           </div>
