@@ -9,7 +9,7 @@ interface LogoProps {
 export function Logo({
   className = "w-8 h-8 text-indigo-600",
   showText = true,
-  textColor = "text-slate-900 dark:text-white",
+  textColor = "text-slate-900",
 }: LogoProps) {
   return (
     <div className="flex items-center gap-2.5">

@@ -206,9 +206,11 @@ export default function SignInPage() {
         <div className="bg-white rounded-3xl border border-gray-100 p-8 sm:p-10 shadow-xl space-y-6">
           {/* Header */}
           <div className="text-center space-y-2">
-            <Link href="/" className="inline-flex items-center justify-center mb-2 group">
-              <Logo className="w-8 h-8 text-indigo-600" showText={true} />
-            </Link>
+            <div className="flex justify-center mb-2">
+              <Link href="/" className="inline-flex items-center justify-center group">
+                <Logo className="w-8 h-8 text-indigo-600" textColor="text-slate-900" showText={true} />
+              </Link>
+            </div>
             <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
               Sign In to Innoversity
             </h1>

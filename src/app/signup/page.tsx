@@ -132,9 +132,11 @@ export default function SignUpPage() {
       <div className="max-w-xl w-full">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center justify-center mb-4 group">
-            <Logo className="w-8 h-8 text-indigo-600" showText={true} />
-          </Link>
+          <div className="flex justify-center mb-4">
+            <Link href="/" className="inline-flex items-center justify-center group">
+              <Logo className="w-8 h-8 text-indigo-600" textColor="text-slate-900" showText={true} />
+            </Link>
+          </div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Create Your Account
           </h1>
