@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { Logo } from "@/components/logo";
 
 type RoleType = "buyer" | "student" | "verifier" | "admin";
 
@@ -205,13 +206,8 @@ export default function SignInPage() {
         <div className="bg-white rounded-3xl border border-gray-100 p-8 sm:p-10 shadow-xl space-y-6">
           {/* Header */}
           <div className="text-center space-y-2">
-            <Link href="/" className="inline-flex items-center gap-2 mb-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
-                <span className="text-white font-black text-sm">IV</span>
-              </div>
-              <span className="font-black text-2xl text-gray-900 tracking-tight">
-                Innoversity
-              </span>
+            <Link href="/" className="inline-flex items-center justify-center mb-2 group">
+              <Logo className="w-8 h-8 text-indigo-600" showText={true} />
             </Link>
             <h1 className="text-2xl sm:text-3xl font-black text-gray-900">
               Sign In to Innoversity

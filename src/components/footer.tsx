@@ -88,7 +88,7 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1 flex flex-col gap-5">
             <Link href="/" className="shrink-0">
-              <Logo className="w-8 h-8 text-white" textColor="text-white" />
+              <Logo className="w-7 h-7 text-white" textColor="text-white" />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500">
               Sri Lanka&rsquo;s Verified Innovation Marketplace — connecting student

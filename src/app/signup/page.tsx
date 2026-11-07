@@ -17,6 +17,7 @@ import {
   Building,
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { Logo } from "@/components/logo";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -131,13 +132,8 @@ export default function SignUpPage() {
       <div className="max-w-xl w-full">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform">
-              <span className="text-white font-black text-lg">IV</span>
-            </div>
-            <span className="font-black text-2xl tracking-tight bg-gradient-to-r from-indigo-700 to-violet-600 bg-clip-text text-transparent">
-              Innoversity
-            </span>
+          <Link href="/" className="inline-flex items-center justify-center mb-4 group">
+            <Logo className="w-8 h-8 text-indigo-600" showText={true} />
           </Link>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Create Your Account
