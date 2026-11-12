@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 1. User Profiles (Auth & Roles)
+model Profile {
+  id           String   @id @db.Uuid
+  role         String   @default("buyer") // buyer | seller | admin
+  fullName     String?
+  district     String?
+  phone        String?
+  email        String?  @unique
+  nicMasked    String?  @map("nic_masked")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  wallet       Wallet?
+  products     Product[] @relation("SellerProducts")
+  orders       Order[]   @relation("BuyerOrders")
+
+  @@map("profiles")
+}
+
+// 2. Wallet (Escrow & Balance)
+model Wallet {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @map("user_id") @db.Uuid
+  balance        Decimal  @default(0) @db.Decimal(12, 2)
+  pendingBalance Decimal  @default(0) @map("pending_balance") @db.Decimal(12, 2) // Escrow Hold
+  totalEarned    Decimal  @default(0) @map("total_earned") @db.Decimal(12, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  profile        Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wallets")
+}
+
+// 3. Products
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  sellerId    String   @map("seller_id") @db.Uuid
+  title       String
+  description String?
+  price       Decimal  @db.Decimal(12, 2)
+  imageUrl    String?  @map("image_url")
+  status      String   @default("active") // active | pending | rejected
+  ratingAvg   Float    @default(0) @map("rating_avg")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  seller      Profile  @relation("SellerProducts", fields: [sellerId], references: [id])
+  orders      Order[]
+
+  @@map("products")
+}
+
+// 4. Orders (Manual Payment & Escrow)
+model Order {
+  id              String   @id @default(uuid()) @db.Uuid
+  buyerId         String   @map("buyer_id") @db.Uuid
+  productId       String   @map("product_id") @db.Uuid
+  totalAmount     Decimal  @map("total_amount") @db.Decimal(12, 2)
+  uniqueAmount    Decimal  @map("unique_amount") @db.Decimal(12, 2) // උදා: 5000.47 (Verify වෙන්න)
+  paymentStatus   String   @default("pending") // pending | claimed | verified | completed
+  paymentSlipUrl  String?  @map("payment_slip_url")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  buyer           Profile  @relation("BuyerOrders", fields: [buyerId], references: [id])
+  product         Product  @relation(fields: [productId], references: [id])
+
+  @@map("orders")
+}
