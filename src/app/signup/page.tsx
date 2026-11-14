@@ -108,6 +108,8 @@ export default function SignUpPage() {
     try {
       const targetRole = role === "seller" ? "SELLER" : "BUYER";
 
+      console.log("[SIGNUP-SUBMIT] Requesting OTP for:", cleanEmail, "Role:", targetRole);
+
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,6 +122,7 @@ export default function SignUpPage() {
       });
 
       const data = await res.json();
+      console.log("[SIGNUP-SUBMIT] API response:", data);
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || "Failed to send verification code.");
@@ -137,6 +140,7 @@ export default function SignUpPage() {
         inputRefs.current[0]?.focus();
       }, 150);
     } catch (err: any) {
+      console.error("[SIGNUP-SUBMIT-ERROR]", err);
       setErrorMessage(err.message || "Failed to initiate registration. Please try again.");
     } finally {
       setLoading(false);
@@ -249,6 +253,8 @@ export default function SignUpPage() {
     try {
       const cleanEmail = email.trim().toLowerCase();
 
+      console.log("[VERIFY-OTP] Submitting 6-digit verification code for:", cleanEmail);
+
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -259,6 +265,7 @@ export default function SignUpPage() {
       });
 
       const data = await res.json();
+      console.log("[VERIFY-OTP] Response from /api/auth/verify-otp:", data);
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || "OTP verification failed. Please double check the code.");
@@ -277,6 +284,7 @@ export default function SignUpPage() {
         router.push("/signin?verified=true");
       }, 1000);
     } catch (err: any) {
+      console.error("[VERIFY-OTP-ERROR]", err);
       setErrorMessage(err.message || "OTP verification failed. Please double check the code.");
     } finally {
       setLoading(false);
