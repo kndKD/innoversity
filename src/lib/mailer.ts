@@ -1,22 +1,32 @@
 import nodemailer from "nodemailer";
 
-const smtpEmail = process.env.SMTP_EMAIL;
-const smtpPassword = process.env.SMTP_APP_PASSWORD;
+export function getTransporter() {
+  const smtpEmail = process.env.SMTP_EMAIL;
+  const smtpPassword = process.env.SMTP_APP_PASSWORD;
 
-export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: smtpEmail,
-    pass: smtpPassword,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // STARTTLS
+    auth: {
+      user: smtpEmail,
+      pass: smtpPassword,
+    },
+    tls: {
+      rejectUnauthorized: false,
+      minVersion: "TLSv1.2",
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+  });
+}
+
+export const transporter = getTransporter();
 
 export async function sendOtpEmail(toEmail: string, otpCode: string, fullName?: string) {
+  const smtpEmail = process.env.SMTP_EMAIL;
+  const smtpPassword = process.env.SMTP_APP_PASSWORD;
+
   if (!smtpEmail || !smtpPassword) {
     throw new Error(
       "SMTP credentials are not configured in environment variables (SMTP_EMAIL, SMTP_APP_PASSWORD)."
@@ -118,5 +128,6 @@ export async function sendOtpEmail(toEmail: string, otpCode: string, fullName?: 
     `,
   };
 
-  return await transporter.sendMail(mailOptions);
+  const activeTransporter = getTransporter();
+  return await activeTransporter.sendMail(mailOptions);
 }
