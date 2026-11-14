@@ -4,34 +4,58 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    let authUserId: string | null = null;
+    let authUserEmail: string | null = null;
 
-    if (authError || !user) {
+    // 1. Try Supabase Auth user
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        authUserId = user.id;
+        authUserEmail = user.email || null;
+      }
+    } catch {}
+
+    // 2. Check unified innoversity_session cookie fallback
+    if (!authUserId) {
+      const sessionCookie = request.cookies.get("innoversity_session")?.value;
+      if (sessionCookie) {
+        try {
+          const parsed = JSON.parse(sessionCookie);
+          if (parsed && parsed.id) {
+            authUserId = parsed.id;
+            authUserEmail = parsed.email || null;
+          }
+        } catch {}
+      }
+    }
+
+    if (!authUserId) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access. Please sign in." },
         { status: 401 }
       );
     }
 
-    // 1. Fetch user's profile from Prisma
+    // 3. Fetch user's profile from Prisma
     let profile = null;
     try {
       profile = await prisma.profile.findUnique({
-        where: { id: user.id },
+        where: { id: authUserId },
       });
     } catch (profileErr) {
       console.error("Error reading profile in buyer dashboard API:", profileErr);
     }
 
-    // 2. Fetch user's real orders from PostgreSQL Prisma table
+    // 4. Fetch user's real orders from PostgreSQL Prisma table
     let orders: any[] = [];
     try {
       orders = await prisma.order.findMany({
-        where: { buyerId: user.id },
+        where: { buyerId: authUserId },
         include: {
           product: {
             include: {
@@ -86,15 +110,14 @@ export async function GET(request: NextRequest) {
 
     const fullName =
       profile?.fullName ||
-      user.user_metadata?.full_name ||
-      user.email?.split("@")[0] ||
+      authUserEmail?.split("@")[0] ||
       "Commercial Buyer";
 
     return NextResponse.json({
       success: true,
       profile: {
-        id: user.id,
-        email: user.email,
+        id: authUserId,
+        email: profile?.email || authUserEmail,
         fullName,
         role: profile?.role || "BUYER",
       },
@@ -105,6 +128,8 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     if (
       error?.digest === "HANGING_PROMISE_REJECTION" ||
+      error?.digest === "NEXT_PRERENDER_INTERRUPTED" ||
+      error?.message?.includes("bail out of prerendering") ||
       error?.message?.includes("During prerendering")
     ) {
       throw error;
@@ -119,13 +144,27 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    let authUserId: string | null = null;
 
-    if (authError || !user) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) authUserId = user.id;
+    } catch {}
+
+    if (!authUserId) {
+      const sessionCookie = request.cookies.get("innoversity_session")?.value;
+      if (sessionCookie) {
+        try {
+          const parsed = JSON.parse(sessionCookie);
+          if (parsed && parsed.id) authUserId = parsed.id;
+        } catch {}
+      }
+    }
+
+    if (!authUserId) {
       return NextResponse.json(
         { success: false, error: "Unauthorized access." },
         { status: 401 }
@@ -141,7 +180,7 @@ export async function POST(request: NextRequest) {
         where: { id: orderId },
       });
 
-      if (!order || order.buyerId !== user.id) {
+      if (!order || order.buyerId !== authUserId) {
         return NextResponse.json(
           { success: false, error: "Order not found or permission denied." },
           { status: 404 }
@@ -171,4 +210,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

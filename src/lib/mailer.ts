@@ -38,8 +38,10 @@ export async function sendOtpEmail(toEmail: string, otpCode: string, fullName?: 
   const mailOptions = {
     from: `"Innoversity Sri Lanka" <${smtpEmail}>`,
     to: toEmail,
+    replyTo: `"Innoversity Support" <${smtpEmail}>`,
     subject: `${otpCode} is your Innoversity verification code`,
-    text: `Hello ${recipientName},\n\nYour Innoversity 6-digit verification code is: ${otpCode}\n\nThis code will expire in exactly 2 minutes (120 seconds).\n\nIf you did not request this code, please ignore this email.\n\nInnoversity Marketplace`,
+    // Clean plain-text fallback alongside HTML for maximum deliverability
+    text: `Your Innoversity verification code is: ${otpCode}. Valid for 2 minutes.\n\nHello ${recipientName},\n\nPlease enter the following 6-digit one-time password (OTP) to complete your verification on Innoversity:\n\n${otpCode}\n\nThis verification code expires in exactly 2 minutes (120 seconds). Do not share this code with anyone.\n\nIf you did not request this verification, you can safely ignore this email.\n\n--\nInnoversity Marketplace Sri Lanka\nhttps://innoversity.lk`,
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -126,6 +128,10 @@ export async function sendOtpEmail(toEmail: string, otpCode: string, fullName?: 
       </body>
       </html>
     `,
+    headers: {
+      "Reply-To": smtpEmail,
+      "X-Entity-Ref-ID": `${Date.now()}-${otpCode}`,
+    },
   };
 
   const activeTransporter = getTransporter();

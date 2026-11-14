@@ -50,57 +50,38 @@ function SignInForm() {
     setLoading(true);
 
     try {
+      // 1. Try Supabase Auth client if configured
       if (isSupabaseConfigured()) {
-        // Strictly authenticate with Supabase Auth credentials
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password,
-        });
-
-        if (error) {
-          if (
-            error.message.toLowerCase().includes("email not confirmed") ||
-            error.message.toLowerCase().includes("not confirmed")
-          ) {
-            throw new Error(
-              "Your email address has not been confirmed yet. Please verify your OTP code."
-            );
+        try {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          });
+          if (error && error.message.toLowerCase().includes("not confirmed")) {
+            throw new Error("Your email address has not been confirmed yet. Please verify your OTP code.");
           }
-          throw new Error(error.message || "Invalid email or password.");
+        } catch (supabaseErr: any) {
+          if (supabaseErr.message?.includes("not confirmed")) {
+            throw supabaseErr;
+          }
         }
+      }
 
-        if (!data.user) {
-          throw new Error("Unable to authenticate. Please try again.");
-        }
-      } else {
-        // Local mode fallback via database
-        const res = await fetch("/api/auth/signin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: cleanEmail, password }),
-        });
-        const result = await res.json();
-        if (!res.ok || !result.success) {
-          throw new Error(result.error || "Invalid email or password.");
-        }
+      // 2. Call server-side /api/auth/signin to set official session cookies
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail, password }),
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Invalid email or password.");
       }
 
       setSuccessMessage("Authentication successful! Redirecting...");
 
-      // Fetch user role from database
-      let targetRole = "BUYER";
-      try {
-        const meRes = await fetch("/api/auth/me");
-        if (meRes.ok) {
-          const meData = await meRes.json();
-          if (meData?.user?.role) {
-            targetRole = meData.user.role.toUpperCase();
-          }
-        }
-      } catch {
-        targetRole = "BUYER";
-      }
-
+      const targetRole = (result.user?.role || "BUYER").toUpperCase();
       const redirectParam = searchParams.get("redirect");
       let destination = redirectParam;
 
@@ -114,10 +95,10 @@ function SignInForm() {
         }
       }
 
+      // Full window navigation so server middleware & Navbar immediately receive newly set session cookies
       setTimeout(() => {
-        router.push(destination!);
-        router.refresh();
-      }, 500);
+        window.location.href = destination || "/buyer/dashboard";
+      }, 350);
     } catch (err: any) {
       setErrorMessage(err.message || "Failed to sign in. Please verify your credentials.");
       setLoading(false);
