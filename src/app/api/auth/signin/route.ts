@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Look up profile in PostgreSQL Prisma profiles table
+    // 1. Look up profile in PostgreSQL Prisma profiles table using findFirst
     const profileDelegate = (prisma as any).profile || (prisma as any).profiles;
     let profile = null;
     try {
-      profile = await profileDelegate.findUnique({
+      profile = await profileDelegate.findFirst({
         where: { email: cleanEmail },
       });
     } catch (dbErr) {

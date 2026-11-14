@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Strictly query PostgreSQL Prisma profiles table
-    console.log(`[AUTH-OTP] Querying prisma.profile.findUnique({ where: { email: "${cleanEmail}" } })...`);
+    // 1. Strictly query PostgreSQL Prisma profiles table using findFirst to prevent unique constraint argument errors
+    console.log(`[AUTH-OTP] Querying prisma.profile.findFirst({ where: { email: "${cleanEmail}" } })...`);
     
     // Support either prisma.profile or prisma.profiles delegate
     const profileDelegate = (prisma as any).profile || (prisma as any).profiles;
-    const existingProfile = await profileDelegate.findUnique({
+    const existingProfile = await profileDelegate.findFirst({
       where: { email: cleanEmail },
     });
 

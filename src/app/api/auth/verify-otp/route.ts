@@ -18,9 +18,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Fetch pending OTP record from Prisma
-    const record = await prisma.otpVerification.findUnique({
+    // 1. Fetch pending OTP record from Prisma using findFirst
+    const record = await prisma.otpVerification.findFirst({
       where: { email: cleanEmail },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!record) {
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
 
     // 7. Delete the used OTP record from OtpVerification
     try {
-      await prisma.otpVerification.delete({
+      await prisma.otpVerification.deleteMany({
         where: { email: cleanEmail },
       });
     } catch (delErr) {
