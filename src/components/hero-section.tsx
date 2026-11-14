@@ -202,7 +202,7 @@ export default function HeroSection() {
                       </span>
                       <div className="flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100 text-[11px] font-semibold text-indigo-700 w-fit">
                         <ShieldCheck size={11} className="text-indigo-600" />
-                        7-Day Escrow Protected
+                        7-Day Payment Protection
                       </div>
                     </div>
 

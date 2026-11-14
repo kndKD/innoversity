@@ -119,7 +119,7 @@ export const initialSellerProfiles: VerificationItem[] = [
     verifier_approved_at: "2026-10-16T10:00:00Z",
     admin_approved_at: "2026-10-16T12:00:00Z",
     reviewed_at: "2026-10-16T12:00:00Z",
-    notes: "ITUM Faculty Verified & Admin Certified · Escrow payouts unlocked",
+    notes: "ITUM Faculty Verified & Admin Certified · Protected payouts unlocked",
   },
 ];
 
@@ -329,7 +329,7 @@ export function getVerificationPipelineInfo(status?: VerificationStatus) {
         label: "Admin Approved",
         badgeText: "✓ Fully Verified Creator",
         color: "text-emerald-700 bg-emerald-50 border-emerald-200",
-        description: "Storefront active, product listing unlocked, and 7-day escrow payouts authorized.",
+        description: "Storefront active, product listing unlocked, and 7-day payment protection payouts authorized.",
       };
     case "verifier_approved":
       return {

@@ -146,7 +146,7 @@ export default function VerifiersPage() {
     setIsProcessing(true);
 
     try {
-      const notes = reviewerNotes || "Platform Admin approved: Escrow clearing & chamber compliance confirmed. Storefront unlocked.";
+      const notes = reviewerNotes || "Platform Admin approved: Payment protection clearing & chamber compliance confirmed. Storefront unlocked.";
       const res = await fetch("/api/seller/verify", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -626,7 +626,7 @@ export default function VerifiersPage() {
                       Submitted Marketplace Innovation: &quot;{selectedItem.product_draft.title}&quot;
                     </span>
                     <span className="font-mono text-xs font-black text-emerald-700 bg-white px-2 py-0.5 rounded-lg border border-emerald-200">
-                      Rs. {Number(selectedItem.product_draft.price || 0).toLocaleString()} (7-Day Escrow)
+                      Rs. {Number(selectedItem.product_draft.price || 0).toLocaleString()} (7-Day Payment Protection)
                     </span>
                   </div>
 
@@ -688,7 +688,7 @@ export default function VerifiersPage() {
                     },
                     {
                       id: "escrowAgreement",
-                      label: "Escrow 7-Day Auto-Release & Dispute Undertaking",
+                      label: "7-Day Payment Protection & Dispute Undertaking",
                       desc: "Applicant compliance with Innoversity standardized commercial buyer safety terms.",
                     },
                   ].map((item) => {

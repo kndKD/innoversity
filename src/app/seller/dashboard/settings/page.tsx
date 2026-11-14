@@ -122,7 +122,7 @@ export default function SellerSettingsPage() {
               Shop &amp; Verification Settings
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">
-              Manage your innovation storefront credentials, institutional audit badge, and escrow payouts.
+              Manage your innovation storefront credentials, institutional audit badge, and protected payouts.
             </p>
           </div>
 
@@ -316,12 +316,12 @@ export default function SellerSettingsPage() {
             </div>
           </div>
 
-          {/* ── Escrow Payout Bank Details ── */}
+          {/* ── Payout Bank Details ── */}
           <div className="pt-4 border-t border-gray-100 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <CreditCard size={18} className="text-indigo-600" />
-                Escrow Settlement Account (Sri Lanka)
+                Payout Settlement Account (Sri Lanka)
               </h3>
               <p className="text-xs text-gray-500">
                 LKR milestone payouts are auto-transferred here once buyers clear the 7-day inspection window.

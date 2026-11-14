@@ -82,7 +82,7 @@ function DynamicInfoPageContent() {
                     desc: "Official institutional mentor or department head signs off on the technical claims.",
                   },
                   {
-                    step: "4. Escrow Adherence",
+                    step: "4. Payment Protection Adherence",
                     desc: "Seller pledges adherence to the 7-day auto-release customer satisfaction guarantee.",
                   },
                 ].map((item, idx) => (
@@ -102,7 +102,7 @@ function DynamicInfoPageContent() {
 
       case "escrow-guide":
         return {
-          title: "The 7-Day Auto-Release Escrow Guide",
+          title: "The 7-Day Payment Protection Guide",
           badge: "Buyer & Seller Protection",
           tagline: "Understand how your payments are held securely in independent trust.",
           icon: Lock,
@@ -110,12 +110,12 @@ function DynamicInfoPageContent() {
             <div className="space-y-6 text-sm text-gray-600">
               <p className="leading-relaxed">
                 Innoversity does not immediately transfer funds to sellers when an order is placed.
-                Instead, funds remain locked in an accredited Sri Lankan escrow account until Domex Courier confirms delivery.
+                Instead, funds remain locked in an accredited Sri Lankan payment protection holding account until Domex Courier confirms delivery.
               </p>
 
               <div className="p-6 rounded-3xl bg-amber-50/70 border border-amber-200 space-y-3">
                 <h4 className="font-bold text-amber-900 text-base flex items-center gap-2">
-                  <Lock size={18} /> The 4 Escrow Rules
+                  <Lock size={18} /> The 4 Payment Protection Rules
                 </h4>
                 <ul className="space-y-2 text-xs text-amber-950">
                   <li>• <strong>Rule 1:</strong> Funds are locked immediately upon checkout. No seller has access to card or account numbers.</li>
@@ -147,7 +147,7 @@ function DynamicInfoPageContent() {
                   <span className="text-xs font-bold text-indigo-700 uppercase">Student Innovators</span>
                   <h3 className="text-2xl font-black text-indigo-900">0% Upfront Listing Fee</h3>
                   <p className="text-xs text-indigo-800 leading-relaxed">
-                    5% flat transaction fee upon completed escrow release. Covers payment gateway and courier tracking webhook costs.
+                    5% flat transaction fee upon completed payment protection release. Covers payment gateway and courier tracking webhook costs.
                   </p>
                 </div>
 
@@ -185,7 +185,7 @@ function DynamicInfoPageContent() {
                     <strong className="text-emerald-600 font-bold">Rs. 0 (FREE)</strong>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl">
-                    <span className="text-gray-400 block text-[10px]">Escrow &amp; Gateway (5%)</span>
+                    <span className="text-gray-400 block text-[10px]">Protection &amp; Gateway (5%)</span>
                     <strong className="text-gray-700 font-bold">Rs. {studentFee.toLocaleString("en-LK")}</strong>
                   </div>
                   <div className="p-3 bg-indigo-50 rounded-xl">
@@ -257,10 +257,10 @@ function DynamicInfoPageContent() {
                   title: "From Matara to Global Kitchens: The Alba Cinnamon Journey",
                   date: "October 14, 2026",
                   author: "Innoversity Editorial",
-                  summary: "How BR-verified smallholder cooperatives are bypassing middlemen through escrow-backed direct orders.",
+                  summary: "How BR-verified smallholder cooperatives are bypassing middlemen through protected direct orders.",
                 },
                 {
-                  title: "Why Hardware Creators in Sri Lanka Need Escrow Protection",
+                  title: "Why Hardware Creators in Sri Lanka Need Payment Protection",
                   date: "October 02, 2026",
                   author: "Finance & Legal Desk",
                   summary: "Eliminating payment fraud and chargebacks for makers and electronics hobbyists.",
@@ -293,7 +293,7 @@ function DynamicInfoPageContent() {
                 {[
                   { role: "Full-Stack Engineer (Next.js / Node / PostgreSQL)", type: "Full-time · Colombo / Remote" },
                   { role: "University Campus Ambassador (UoM / UoC / SLIIT / NSBM)", type: "Part-time Student Stipend" },
-                  { role: "Escrow Operations & Dispute Arbitrator", type: "Full-time · Legal & Commercial Desk" },
+                  { role: "Payment Protection Operations & Dispute Arbitrator", type: "Full-time · Legal & Commercial Desk" },
                 ].map((job, idx) => (
                   <div key={idx} className="p-4 rounded-2xl bg-white border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
                     <div>
@@ -340,7 +340,7 @@ function DynamicInfoPageContent() {
 
       case "terms-of-service":
         return {
-          title: "Terms of Service & Escrow Agreement",
+          title: "Terms of Service & Payment Protection Agreement",
           badge: "Legal Framework",
           tagline: "Standardized contract terms under the laws of Sri Lanka.",
           icon: FileText,
@@ -348,9 +348,9 @@ function DynamicInfoPageContent() {
             <div className="space-y-4 text-xs text-gray-600 leading-relaxed">
               <p>
                 By using Innoversity.lk, buyers, student sellers, and verifiers agree to comply with these terms, governing marketplace listings,
-                escrow handling, and dispute resolution.
+                payment protection handling, and dispute resolution.
               </p>
-              <h4 className="font-bold text-sm text-gray-900 pt-2">1. Escrow Auto-Release Covenant</h4>
+              <h4 className="font-bold text-sm text-gray-900 pt-2">1. Payment Protection Auto-Release Covenant</h4>
               <p>
                 Buyers agree that payments vaulted for confirmed consignments will automatically release to the seller 7 calendar days after delivery
                 confirmation, unless a dispute is filed prior to timer expiry.
@@ -416,7 +416,7 @@ function DynamicInfoPageContent() {
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white"
                     >
-                      <option value="escrow">Escrow Payment Hold Question</option>
+                      <option value="escrow">Payment Protection Hold Question</option>
                       <option value="courier">Domex / Courier Tracking Problem</option>
                       <option value="verification">Verification Badge Inaccuracy</option>
                       <option value="bug">Technical Bug or Error on Website</option>
@@ -465,7 +465,7 @@ function DynamicInfoPageContent() {
                   </a>
                 </div>
                 <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100">
-                  <span className="text-indigo-600 font-bold block mb-1">Escrow Mediation</span>
+                  <span className="text-indigo-600 font-bold block mb-1">Payment Protection Mediation</span>
                   <a href="mailto:escrow@innoversity.lk" className="text-gray-900 font-semibold hover:underline">
                     escrow@innoversity.lk
                   </a>

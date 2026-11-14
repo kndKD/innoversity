@@ -362,7 +362,7 @@ export default function SignUpPage() {
                     </div>
                     <div className="font-bold text-sm text-gray-900">Commercial Buyer</div>
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Procure verified inventions with 7-day milestone inspection escrow.
+                      Procure verified inventions with 7-Day Payment Protection.
                     </p>
                   </button>
 
@@ -392,7 +392,7 @@ export default function SignUpPage() {
                     </div>
                     <div className="font-bold text-sm text-gray-900">Student / SME Seller</div>
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      List campus inventions, IT solutions, and earn through secured escrow.
+                      List campus inventions, IT solutions, and earn through 100% Payment Protection.
                     </p>
                   </button>
                 </div>
@@ -654,7 +654,7 @@ export default function SignUpPage() {
             <ShieldCheck size={14} className="text-emerald-600" /> Masked NIC Protection
           </span>
           <span className="flex items-center gap-1.5">
-            <Lock size={14} className="text-indigo-600" /> Bank-Grade Escrow
+            <Lock size={14} className="text-indigo-600" /> 100% Payment Protection
           </span>
           <span className="flex items-center gap-1.5">
             <Building size={14} className="text-purple-600" /> Verified Faculties

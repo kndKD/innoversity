@@ -372,11 +372,11 @@ export default function RebuiltSellerOnboardingPage() {
       return false;
     }
     if (!acceptEscrowTerms) {
-      setErrorMessage("You must accept Innoversity's 7-Day Auto-Release Escrow Rules to proceed.");
+      setErrorMessage("You must accept Innoversity's 7-Day Payment Protection Rules to proceed.");
       return false;
     }
     if (!bankAccountNo.trim() || !bankAccountName.trim()) {
-      setErrorMessage("Please provide valid seller payout bank details for escrow disbursement.");
+      setErrorMessage("Please provide valid seller payout bank details for payout disbursement.");
       return false;
     }
     setErrorMessage(null);
@@ -668,7 +668,7 @@ export default function RebuiltSellerOnboardingPage() {
                   </div>
                   <h3 className="text-sm font-bold text-gray-900">Admin Clearance &amp; Unlock</h3>
                   <p className="text-[11px] text-gray-500">
-                    Commercial Bank escrow account activated and marketplace storefront published.
+                    Commercial Bank safe payout account activated and marketplace storefront published.
                   </p>
                   <span
                     className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded ${
@@ -713,8 +713,8 @@ export default function RebuiltSellerOnboardingPage() {
                 <span className="font-semibold text-gray-900">{productTitle}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-gray-200/60">
-                <span className="text-gray-500">Unit Price &amp; Escrow:</span>
-                <span className="font-mono font-bold text-emerald-700">Rs. {parseFloat(unitPrice || "0").toLocaleString()} (7-Day Escrow)</span>
+                <span className="text-gray-500">Unit Price &amp; Payment Protection:</span>
+                <span className="font-mono font-bold text-emerald-700">Rs. {parseFloat(unitPrice || "0").toLocaleString()} (7-Day Payment Protection)</span>
               </div>
               <div className="flex justify-between py-1 border-b border-gray-200/60">
                 <span className="text-gray-500">Zero-Leak Masked NIC:</span>
@@ -772,7 +772,7 @@ export default function RebuiltSellerOnboardingPage() {
                       ? "Verification Type & Institutional KYC"
                       : currentStep === 2
                       ? "Product & Innovation Details"
-                      : "Pricing & 7-Day Escrow Setup"}
+                      : "Pricing & 7-Day Payment Protection Setup"}
                   </p>
                 </div>
 
@@ -781,7 +781,7 @@ export default function RebuiltSellerOnboardingPage() {
                   {[
                     { num: 1, label: "KYC Identity" },
                     { num: 2, label: "Product & Gallery" },
-                    { num: 3, label: "Pricing & Escrow" },
+                    { num: 3, label: "Pricing & Safe Pay" },
                   ].map((s) => (
                     <div
                       key={s.num}
@@ -850,7 +850,7 @@ export default function RebuiltSellerOnboardingPage() {
                     />
                   </div>
                   <p className="text-[11px] text-gray-400 mt-1">
-                    Your storefront brand name as it will be shown to buyers and on official escrow receipts.
+                    Your storefront brand name as it will be shown to buyers and on official payment protection receipts.
                   </p>
                 </div>
 
@@ -1389,7 +1389,7 @@ export default function RebuiltSellerOnboardingPage() {
                     onClick={handleNext}
                     className="px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-200 transition-all flex items-center gap-2 cursor-pointer"
                   >
-                    <span>Proceed to Step 3: Pricing &amp; Escrow Setup</span>
+                    <span>Proceed to Step 3: Pricing &amp; Payment Protection Setup</span>
                     <ArrowRight size={15} />
                   </button>
                 </div>
@@ -1404,9 +1404,9 @@ export default function RebuiltSellerOnboardingPage() {
                 <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-start gap-3 text-xs text-indigo-900">
                   <Sparkles size={18} className="text-indigo-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block font-bold">Step 3: Escrow Security &amp; Courier Logistics</strong>
+                    <strong className="block font-bold">Step 3: Safe Pay Security &amp; Courier Logistics</strong>
                     <span>
-                      Configure your item unit pricing and connect your Sri Lankan bank account for escrow disbursement. Buyers are protected by our 7-day inspection window.
+                      Configure your item unit pricing and connect your Sri Lankan bank account for payout disbursement. Buyers are protected by our 7-day inspection window.
                     </span>
                   </div>
                 </div>
@@ -1458,12 +1458,12 @@ export default function RebuiltSellerOnboardingPage() {
                   </div>
                 </div>
 
-                {/* 7-DAY AUTO-RELEASE ESCROW HIGHLIGHT CARD */}
+                {/* 7-DAY AUTO-RELEASE PAYMENT PROTECTION HIGHLIGHT CARD */}
                 <div className="bg-emerald-50/80 border border-emerald-200 rounded-3xl p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={20} className="text-emerald-700" />
                     <h3 className="text-sm font-black text-emerald-950">
-                      Innoversity 7-Day Auto-Release Escrow Rules
+                      Innoversity 7-Day Payment Protection Rules
                     </h3>
                   </div>
 
@@ -1471,7 +1471,7 @@ export default function RebuiltSellerOnboardingPage() {
                     <div className="bg-white/90 p-3 rounded-xl border border-emerald-100 space-y-1">
                       <strong className="text-emerald-900 block">1. Safe Holding</strong>
                       <p className="text-[11px] text-gray-600">
-                        100% of the buyer&apos;s funds are held in partner bank escrow upon order placement.
+                        100% of the buyer&apos;s funds are held in partner bank safe protection upon order placement.
                       </p>
                     </div>
 
@@ -1497,14 +1497,14 @@ export default function RebuiltSellerOnboardingPage() {
                       onChange={(e) => setAcceptEscrowTerms(e.target.checked)}
                       className="w-4 h-4 rounded text-emerald-600 border-gray-300 focus:ring-emerald-500"
                     />
-                    <span>I understand and accept Innoversity&apos;s 7-Day Auto-Release Escrow Policy.</span>
+                    <span>I understand and accept Innoversity&apos;s 7-Day Payment Protection Policy.</span>
                   </label>
                 </div>
 
                 {/* Seller Payout Bank Details */}
                 <div className="p-5 bg-gray-50/80 rounded-2xl border border-gray-100 space-y-4">
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Building size={15} className="text-indigo-600" /> Escrow Payout Bank Account Details
+                    <Building size={15} className="text-indigo-600" /> Payout Bank Account Details
                   </span>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -199,7 +199,7 @@ export default function SellerDashboardPage() {
               </div>
 
               <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900">
-                <span className="font-bold block">Automated Escrow Milestone:</span>
+                <span className="font-bold block">Automated Payment Protection Milestone:</span>
                 Once Domex scans this parcel as delivered, buyer&apos;s 7-day inspection window starts.
               </div>
 
@@ -429,7 +429,7 @@ export default function SellerDashboardPage() {
                 </span>
               </div>
               <p className="text-[11px] opacity-80 leading-relaxed">
-                Final platform governance sign-off unlocks active marketplace listing &amp; escrow payouts.
+                Final platform governance sign-off unlocks active marketplace listing &amp; protected payouts.
               </p>
             </div>
           </div>
@@ -642,7 +642,7 @@ export default function SellerDashboardPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-indigo-50 text-indigo-900 text-[11px] leading-relaxed">
-                💡 Entering this tracking number triggers a notification to the buyer and synchronizes delivery status with the 7-day auto-release escrow countdown.
+                💡 Entering this tracking number triggers a notification to the buyer and synchronizes delivery status with the 7-day auto-release payment protection countdown.
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

@@ -120,7 +120,7 @@ function SignInForm() {
               Sign In to Innoversity
             </h1>
             <p className="text-xs text-gray-500 max-w-sm mx-auto">
-              Access your verified innovation studio, buyer escrow dashboard, or institutional review queue.
+              Access your verified innovation studio, buyer order dashboard, or institutional review queue.
             </p>
           </div>
 
@@ -231,7 +231,7 @@ function SignInForm() {
             <ShieldCheck size={14} className="text-emerald-600" /> Masked NIC Protection
           </span>
           <span className="flex items-center gap-1.5">
-            <Lock size={14} className="text-indigo-600" /> Bank-Grade Escrow
+            <Lock size={14} className="text-indigo-600" /> 100% Payment Protection
           </span>
           <span className="flex items-center gap-1.5">
             <Building size={14} className="text-purple-600" /> Verified Faculties

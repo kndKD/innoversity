@@ -104,12 +104,12 @@ export default function BuyerDashboardPage() {
           const releasedOrder = orders.find((o) => o.id === orderId);
           return Math.max(0, prev - (releasedOrder?.amount || 0));
         });
-        showToast("✅ Escrow funds successfully released to the creator!");
+        showToast("✅ Protected funds successfully released to the creator!");
       } else {
-        showToast(`❌ Error: ${result.error || "Failed to release escrow"}`);
+        showToast(`❌ Error: ${result.error || "Failed to release payment"}`);
       }
     } catch {
-      showToast("❌ An unexpected error occurred while releasing escrow.");
+      showToast("❌ An unexpected error occurred while releasing payment.");
     } finally {
       setReleasingId(null);
     }
@@ -119,7 +119,7 @@ export default function BuyerDashboardPage() {
     return (
       <div className="min-h-screen bg-[#F8F7FF] pt-28 pb-24 px-4 flex flex-col items-center justify-center">
         <div className="w-10 h-10 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-semibold text-gray-500">Loading your escrow account...</p>
+        <p className="text-sm font-semibold text-gray-500">Loading your protected account...</p>
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function BuyerDashboardPage() {
                 </span>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                {profile?.email || "buyer@company.lk"} · Protected by 7-Day Innoversity Escrow
+                {profile?.email || "buyer@company.lk"} · Protected by 7-Day Payment Protection
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function BuyerDashboardPage() {
               href="/how-it-works"
               className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold text-xs transition-all"
             >
-              Escrow Protection Rules
+              Payment Protection Rules
             </Link>
           </div>
         </div>
@@ -179,7 +179,7 @@ export default function BuyerDashboardPage() {
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xs">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                Funds in Safe Escrow
+                Protected Funds
               </span>
               <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                 <Lock size={16} />
@@ -191,7 +191,7 @@ export default function BuyerDashboardPage() {
             <p className="text-[11px] text-gray-500 mt-1">
               {totalInEscrow > 0
                 ? "Held with Commercial Bank partner until your inspection approval."
-                : "No active funds in escrow. Orders will reflect here."}
+                : "No active protected funds. Orders will reflect here."}
             </p>
           </div>
 
@@ -233,7 +233,7 @@ export default function BuyerDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-black text-gray-900">
-                Your Escrow Purchases &amp; Orders
+                Your Protected Purchases &amp; Orders
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
                 Review your active hardware prototype and software deliverables.
@@ -251,7 +251,7 @@ export default function BuyerDashboardPage() {
                 <ShoppingBag size={28} />
               </div>
               <div className="space-y-1.5 max-w-md mx-auto">
-                <h3 className="text-base font-black text-gray-900">No Escrow Orders Yet</h3>
+                <h3 className="text-base font-black text-gray-900">No Orders Yet</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
                   You have not placed any orders yet. Discover campus innovations, precision hardware prototypes, and enterprise software verified by top Sri Lankan universities.
                 </p>
@@ -302,7 +302,7 @@ export default function BuyerDashboardPage() {
                             : "bg-emerald-100 text-emerald-800"
                         }`}
                       >
-                        {order.escrowStatus === "in_escrow" ? "🔒 Escrow Locked" : "✓ Funds Released"}
+                        {order.escrowStatus === "in_escrow" ? "🔒 Payment Protected" : "✓ Funds Released"}
                       </span>
                     </div>
                   </div>
