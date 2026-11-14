@@ -29,7 +29,6 @@ const navLinks = [
   { label: "Marketplace", href: "/#marketplace" },
   { label: "Innovations", href: "/innovations" },
   { label: "How It Works", href: "/how-it-works" },
-  { label: "Verifiers", href: "/verifiers" },
 ];
 
 export default function Navbar() {

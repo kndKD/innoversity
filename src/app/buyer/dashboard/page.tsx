@@ -286,8 +286,11 @@ export default function BuyerDashboardPage() {
                         </span>
                       </div>
                       <h3 className="font-bold text-base text-gray-900">{order.productTitle}</h3>
-                      <p className="text-xs text-gray-500">
-                        Seller: <strong className="text-gray-700">{order.sellerName}</strong>
+                      <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                        <span>Seller: <strong className="text-gray-700">{order.sellerName}</strong></span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-0.5">
+                          <ShieldCheck size={10} /> Verified Seller
+                        </span>
                       </p>
                     </div>
 

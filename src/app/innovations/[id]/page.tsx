@@ -221,8 +221,8 @@ function ProductDetailContent() {
                       : "bg-amber-50 text-amber-800 border-amber-200"
                   }`}
                 >
-                  <FileCheck size={14} />
-                  <span>{isVerified ? "✓ Verified Creator Active" : "⏳ Pending Auditor Review"}</span>
+                  <ShieldCheck size={14} className={isVerified ? "text-emerald-600" : "text-amber-600"} />
+                  <span>{isVerified ? "Verified Seller" : "KYC Review Pending"}</span>
                 </div>
               </div>
 
@@ -364,9 +364,17 @@ function ProductDetailContent() {
                 <h1 className="text-2xl font-black text-gray-900 leading-tight">
                   {product.title}
                 </h1>
-                <p className="text-xs text-gray-400 mt-1">
-                  Provided by <span className="text-gray-700 font-semibold">{product.sellerName}</span>
-                </p>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <p className="text-xs text-gray-400">
+                    Provided by <span className="text-gray-700 font-semibold">{product.sellerName}</span>
+                  </p>
+                  {isVerified && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <ShieldCheck size={11} className="text-emerald-600" />
+                      Verified Seller
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-baseline justify-between border-y border-gray-100 py-4">

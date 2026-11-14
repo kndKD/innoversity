@@ -156,12 +156,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.storySnippet}
           </p>
 
-          {/* ── Dynamic Verified Creator Badge ── */}
+          {/* ── Dynamic Verified Seller Badge ── */}
           {isApproved ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 w-fit max-w-full shadow-2xs">
               <ShieldCheck size={14} className="text-emerald-600 shrink-0" strokeWidth={2.5} />
               <div className="flex items-center gap-1 truncate text-xs">
-                <span className="font-black text-emerald-800">Verified Creator</span>
+                <span className="font-black text-emerald-800">Verified Seller</span>
                 <span className="text-emerald-600 text-[10px]">·</span>
                 <span className="text-emerald-700 font-semibold truncate">{endorsingInstitution}</span>
               </div>
