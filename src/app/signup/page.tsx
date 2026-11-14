@@ -20,7 +20,6 @@ import {
   ArrowLeft,
   AlertCircle,
 } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { Logo } from "@/components/logo";
 
 const OTP_EXPIRY_SECONDS = 120; // 2 minutes
@@ -78,7 +77,7 @@ export default function SignUpPage() {
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // ── Step 1: Submit Buyer Sign Up Form ─────────────────────────────────────
+  // ── Step 1: Submit Sign Up Form -> Call /api/auth/send-otp ─────────────────
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -109,36 +108,36 @@ export default function SignUpPage() {
     try {
       const targetRole = role === "seller" ? "SELLER" : "BUYER";
 
-      if (isSupabaseConfigured()) {
-        const { error: authError } = await supabase.auth.signUp({
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           email: cleanEmail,
+          fullName: cleanName,
           password,
-          options: {
-            data: {
-              full_name: cleanName,
-              role: targetRole,
-            },
-          },
-        });
+          role: targetRole,
+        }),
+      });
 
-        if (authError) {
-          throw new Error(authError.message);
-        }
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to send verification code.");
       }
 
-      // Switch to 6-Digit OTP verification form immediately
+      // Switch to 6-Digit OTP verification screen
       setStep("otp");
-      setTimeLeft(OTP_EXPIRY_SECONDS);
+      setTimeLeft(data.expiresInSeconds || OTP_EXPIRY_SECONDS);
       setIsTimerActive(true);
       setOtpDigits(["", "", "", "", "", ""]);
-      setSuccessMessage(`A 6-digit verification code has been sent to ${cleanEmail}.`);
+      setSuccessMessage(data.message || `A 6-digit verification code has been sent to ${cleanEmail}.`);
 
-      // Auto-focus first OTP box
+      // Auto-focus first OTP input
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 150);
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed to create account. Please try again.");
+      setErrorMessage(err.message || "Failed to initiate registration. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -146,7 +145,6 @@ export default function SignUpPage() {
 
   // ── OTP Input Handlers ───────────────────────────────────────────────────
   const handleOtpChange = (index: number, value: string) => {
-    // Only accept numeric digit
     const cleaned = value.replace(/\D/g, "");
     if (!cleaned) {
       const updated = [...otpDigits];
@@ -155,13 +153,11 @@ export default function SignUpPage() {
       return;
     }
 
-    // Single digit entry
     const char = cleaned.slice(-1);
     const updated = [...otpDigits];
     updated[index] = char;
     setOtpDigits(updated);
 
-    // Auto advance to next input
     if (index < 5 && char) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -188,7 +184,7 @@ export default function SignUpPage() {
     inputRefs.current[nextIndex]?.focus();
   };
 
-  // ── Resend New OTP Action ─────────────────────────────────────────────────
+  // ── Resend New OTP Action -> Call /api/auth/send-otp ───────────────────────
   const handleResendOtp = async () => {
     if (timeLeft > 0 || resending) return;
 
@@ -198,20 +194,28 @@ export default function SignUpPage() {
 
     try {
       const cleanEmail = email.trim().toLowerCase();
+      const cleanName = fullName.trim();
+      const targetRole = role === "seller" ? "SELLER" : "BUYER";
 
-      if (isSupabaseConfigured()) {
-        const { error } = await supabase.auth.resend({
-          type: "signup",
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           email: cleanEmail,
-        });
+          fullName: cleanName,
+          password,
+          role: targetRole,
+        }),
+      });
 
-        if (error) {
-          throw new Error(error.message);
-        }
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to resend verification code.");
       }
 
-      // Reset timer to 2 minutes (120s)
-      setTimeLeft(OTP_EXPIRY_SECONDS);
+      // Reset timer to 2 minutes
+      setTimeLeft(data.expiresInSeconds || OTP_EXPIRY_SECONDS);
       setIsTimerActive(true);
       setOtpDigits(["", "", "", "", "", ""]);
       setSuccessMessage("A fresh 6-digit verification code has been dispatched to your email.");
@@ -223,7 +227,7 @@ export default function SignUpPage() {
     }
   };
 
-  // ── Step 2: Verify OTP & Upsert to Prisma Profiles ────────────────────────
+  // ── Step 2: Verify OTP & Create Real Account -> Call /api/auth/verify-otp ─
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -244,48 +248,21 @@ export default function SignUpPage() {
 
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const cleanName = fullName.trim();
-      const targetRole = role === "seller" ? "SELLER" : "BUYER";
-      let verifiedUserId: string | null = null;
 
-      if (isSupabaseConfigured()) {
-        // Verify 6-digit token using Supabase Auth
-        const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
-          email: cleanEmail,
-          token: otpCode,
-          type: "signup",
-        });
-
-        if (verifyError) {
-          throw new Error(verifyError.message || "Invalid or expired OTP code.");
-        }
-
-        if (verifyData?.user) {
-          verifiedUserId = verifyData.user.id;
-        }
-      }
-
-      // Sync verified record into Prisma `profiles` table
-      const response = await fetch("/api/auth/signup", {
+      const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: verifiedUserId,
           email: cleanEmail,
-          fullName: cleanName,
-          role: targetRole,
+          otp: otpCode,
         }),
       });
 
-      const syncResult = await response.json();
-      if (!response.ok || !syncResult.success) {
-        throw new Error(syncResult.error || "Failed to finalize user profile registration.");
-      }
+      const data = await res.json();
 
-      // Sign out temporary session so user logs in cleanly through /signin
-      try {
-        await supabase.auth.signOut();
-      } catch {}
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "OTP verification failed. Please double check the code.");
+      }
 
       // Clear any legacy demo cookies / local storage
       if (typeof window !== "undefined") {
@@ -298,7 +275,7 @@ export default function SignUpPage() {
       setSuccessMessage("Account verified! Redirecting to sign in...");
       setTimeout(() => {
         router.push("/signin?verified=true");
-      }, 1200);
+      }, 1000);
     } catch (err: any) {
       setErrorMessage(err.message || "OTP verification failed. Please double check the code.");
     } finally {
@@ -499,7 +476,7 @@ export default function SignUpPage() {
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 text-xs text-gray-600 flex items-start gap-2">
                   <ShieldCheck size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <span>
-                    A 6-digit confirmation code will be sent to your email with a 2-minute expiration window to confirm your account identity.
+                    A 6-digit confirmation code will be dispatched to your email with a 2-minute expiration window to confirm your account identity.
                   </span>
                 </div>
 

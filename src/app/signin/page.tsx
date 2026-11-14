@@ -31,7 +31,7 @@ function SignInForm() {
   useEffect(() => {
     // Check if redirected after successful email OTP verification
     if (searchParams.get("verified") === "true") {
-      setSuccessMessage("Account verified! Please sign in to continue.");
+      setSuccessMessage("Account verified! Please sign in.");
     }
   }, [searchParams]);
 
@@ -50,32 +50,39 @@ function SignInForm() {
     setLoading(true);
 
     try {
-      if (!isSupabaseConfigured()) {
-        throw new Error(
-          "Authentication service is not configured. Please ensure environment keys are set."
-        );
-      }
+      if (isSupabaseConfigured()) {
+        // Strictly authenticate with Supabase Auth credentials
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
 
-      // Strictly authenticate with Supabase Auth credentials
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
-
-      if (error) {
-        if (
-          error.message.toLowerCase().includes("email not confirmed") ||
-          error.message.toLowerCase().includes("not confirmed")
-        ) {
-          throw new Error(
-            "Your email address has not been confirmed yet. Please verify your OTP code."
-          );
+        if (error) {
+          if (
+            error.message.toLowerCase().includes("email not confirmed") ||
+            error.message.toLowerCase().includes("not confirmed")
+          ) {
+            throw new Error(
+              "Your email address has not been confirmed yet. Please verify your OTP code."
+            );
+          }
+          throw new Error(error.message || "Invalid email or password.");
         }
-        throw new Error(error.message || "Invalid email or password.");
-      }
 
-      if (!data.user) {
-        throw new Error("Unable to authenticate. Please try again.");
+        if (!data.user) {
+          throw new Error("Unable to authenticate. Please try again.");
+        }
+      } else {
+        // Local mode fallback via database
+        const res = await fetch("/api/auth/signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: cleanEmail, password }),
+        });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          throw new Error(result.error || "Invalid email or password.");
+        }
       }
 
       setSuccessMessage("Authentication successful! Redirecting...");
@@ -91,7 +98,7 @@ function SignInForm() {
           }
         }
       } catch {
-        targetRole = (data.user.user_metadata?.role || "BUYER").toUpperCase();
+        targetRole = "BUYER";
       }
 
       const redirectParam = searchParams.get("redirect");
