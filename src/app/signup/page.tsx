@@ -57,69 +57,76 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      // 1. Direct API registration
+      let createdUserId: string | null = null;
+      const targetRole = role === "seller" ? "SELLER" : "BUYER";
+
+      // 1. Connect to supabase.auth.signUp
+      if (isSupabaseConfigured()) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            data: {
+              full_name: fullName.trim(),
+              role: targetRole,
+            },
+          },
+        });
+
+        if (authError) {
+          throw new Error(authError.message);
+        }
+
+        if (authData?.user) {
+          createdUserId = authData.user.id;
+        }
+      }
+
+      // 2. Immediately sync/insert matching record into our Prisma profiles table
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: fullName.trim(),
+          id: createdUserId,
+          fullName: fullName.trim(),
           email: email.trim().toLowerCase(),
           password,
-          role,
+          role: targetRole,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error || "Failed to create account.");
+        throw new Error(result.error || "Failed to create account profile.");
       }
 
-      // 2. Also register client-side session if Supabase is active
-      if (isSupabaseConfigured()) {
-        try {
-          await supabase.auth.signUp({
-            email: email.trim().toLowerCase(),
-            password,
-            options: {
-              data: {
-                full_name: fullName.trim(),
-                role,
-              },
-            },
-          });
-        } catch (supaErr) {
-          console.warn("Client Supabase signUp handled:", supaErr);
-        }
-      }
-
-      // Save user session in localStorage for local state continuity
+      // 3. Save user session in localStorage & cookie for immediate state continuity
       if (typeof window !== "undefined") {
+        document.cookie = `innoversity_demo_auth=${targetRole.toLowerCase()}; path=/; max-age=86400; SameSite=Lax`;
         localStorage.setItem(
           "innoversity_user",
           JSON.stringify({
-            id: result.user?.id || "usr-" + Date.now(),
+            id: result.user?.id || createdUserId,
             email: email.trim().toLowerCase(),
             full_name: fullName.trim(),
-            role,
+            role: targetRole,
           })
         );
       }
 
       setSuccessMessage(
-        role === "seller"
+        targetRole === "SELLER"
           ? "Account created! Proceeding to Institutional KYC Verification..."
           : "Account created! Redirecting to Buyer Dashboard..."
       );
 
       // Route according to role
+      const destination = result.redirectUrl || (targetRole === "SELLER" ? "/onboarding" : "/buyer/dashboard");
       setTimeout(() => {
-        if (role === "seller") {
-          router.push("/onboarding");
-        } else {
-          router.push("/buyer/dashboard");
-        }
-      }, 1200);
+        router.push(destination);
+        router.refresh();
+      }, 1000);
     } catch (err: any) {
       setErrorMessage(err.message || "An unexpected error occurred.");
     } finally {

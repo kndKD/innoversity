@@ -1,109 +1,96 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin, isSupabaseConfigured, UserRole } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, full_name, role } = body;
+    const { id, email, fullName, full_name, role, password } = body;
 
-    // Validation
-    if (!email || !password || !full_name) {
-      return NextResponse.json(
-        { success: false, error: "Please fill in all required fields (email, password, full name)." },
-        { status: 400 }
-      );
-    }
+    const resolvedFullName = (fullName || full_name || "").trim();
+    const resolvedEmail = (email || "").trim().toLowerCase();
+    const resolvedRole = (role || "BUYER").toString().toUpperCase() === "SELLER" ? "SELLER" : "BUYER";
 
-    const validRoles: UserRole[] = ["buyer", "seller", "verifier", "admin"];
-    const targetRole: UserRole = validRoles.includes(role) ? role : "buyer";
+    let userId = id;
 
-    if (password.length < 6) {
-      return NextResponse.json(
-        { success: false, error: "Password must be at least 6 characters long." },
-        { status: 400 }
-      );
-    }
-
-    // Determine target redirect path
-    const redirectUrl = targetRole === "seller" ? "/onboarding" : "/buyer/dashboard";
-
-    // If Supabase is fully configured, perform real authentication registration
-    if (isSupabaseConfigured()) {
-      const supabaseAdmin = getSupabaseAdmin();
-
-      // Sign up user with metadata
-      const { data: authData, error: authError } = await supabaseAdmin.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name,
-            role: targetRole,
-          },
-        },
-      });
-
-      if (authError) {
-        return NextResponse.json(
-          { success: false, error: authError.message },
-          { status: 400 }
-        );
-      }
-
-      if (authData.user) {
-        // Ensure record is saved into public.users table
-        const { error: dbError } = await supabaseAdmin
-          .from("users")
-          .upsert(
-            {
-              id: authData.user.id,
-              email: authData.user.email!,
-              full_name,
-              role: targetRole,
-              updated_at: new Date().toISOString(),
+    // If an existing Supabase Auth user ID was not provided:
+    if (!userId) {
+      if (isSupabaseConfigured() && password) {
+        const supabaseAdmin = getSupabaseAdmin();
+        const { data: authData, error: authError } = await supabaseAdmin.auth.signUp({
+          email: resolvedEmail,
+          password,
+          options: {
+            data: {
+              full_name: resolvedFullName,
+              role: resolvedRole,
             },
-            { onConflict: "id" }
-          );
+          },
+        });
 
-        if (dbError) {
-          console.error("Error upserting public.users record:", dbError);
+        if (authError) {
+          return NextResponse.json(
+            { success: false, error: authError.message },
+            { status: 400 }
+          );
         }
 
-        return NextResponse.json({
-          success: true,
-          message: "Account created successfully.",
-          user: {
-            id: authData.user.id,
-            email: authData.user.email,
-            full_name,
-            role: targetRole,
-          },
-          session: authData.session,
-          redirectUrl,
-        });
+        if (authData.user) {
+          userId = authData.user.id;
+        }
+      } else {
+        // Fallback UUID generation for development / demo mode
+        userId = crypto.randomUUID();
       }
     }
 
-    // Fallback mode (when Supabase credentials are not yet configured in local environment)
-    const simulatedUserId = "usr-" + Math.random().toString(36).substring(2, 10);
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "Failed to establish a valid user ID for profile registration." },
+        { status: 400 }
+      );
+    }
+
+    // Sync / Upsert matching record into Prisma `profiles` table
+    const profile = await prisma.profile.upsert({
+      where: { id: userId },
+      create: {
+        id: userId,
+        email: resolvedEmail || null,
+        fullName: resolvedFullName || null,
+        role: resolvedRole,
+      },
+      update: {
+        email: resolvedEmail || undefined,
+        fullName: resolvedFullName || undefined,
+        role: resolvedRole,
+      },
+    });
+
+    const redirectUrl = resolvedRole === "SELLER" ? "/onboarding" : "/buyer/dashboard";
+
     return NextResponse.json({
       success: true,
-      message: "Account created in development/preview mode.",
+      message: "Account and profile successfully created.",
       user: {
-        id: simulatedUserId,
-        email,
-        full_name,
-        role: targetRole,
-      },
-      session: {
-        access_token: "simulated_token_" + Date.now(),
-        user: { id: simulatedUserId, email },
+        id: profile.id,
+        email: profile.email,
+        fullName: profile.fullName,
+        role: profile.role,
       },
       redirectUrl,
-      isDemoMode: true,
     });
   } catch (err: any) {
     console.error("Signup API error:", err);
+
+    // Handle Prisma unique constraint violation (e.g. duplicate email)
+    if (err.code === "P2002") {
+      return NextResponse.json(
+        { success: false, error: "An account with this email address already exists. Please sign in." },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: err.message || "Internal server error occurred during registration." },
       { status: 500 }

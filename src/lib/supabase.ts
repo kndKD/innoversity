@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
 // User and Seller types
 export type UserRole = "buyer" | "seller" | "verifier" | "admin";
@@ -57,14 +58,11 @@ export const isSupabaseConfigured = (): boolean => {
   );
 };
 
-// Singleton Supabase browser/client
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+// Singleton Supabase browser/client using @supabase/ssr to persist cookies in document.cookie
+export const createBrowserSupabase = () =>
+  createBrowserClient(supabaseUrl, supabaseAnonKey);
+
+export const supabase: SupabaseClient = createBrowserSupabase();
 
 // Admin client for server-side operations (bypasses RLS with service role key if available)
 export const getSupabaseAdmin = (): SupabaseClient => {

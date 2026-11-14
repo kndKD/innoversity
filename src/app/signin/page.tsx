@@ -85,8 +85,9 @@ export default function SignInPage() {
 
   const handleDemoLogin = (role: RoleType, destination: string) => {
     setLoading(true);
-    // Set mock local session
+    // Set mock local session & cookie
     if (typeof window !== "undefined") {
+      document.cookie = `innoversity_demo_auth=${role}; path=/; max-age=86400; SameSite=Lax`;
       localStorage.setItem(
         "innoversity_user",
         JSON.stringify({
@@ -104,6 +105,7 @@ export default function SignInPage() {
     }
     setTimeout(() => {
       router.push(destination);
+      router.refresh();
     }, 350);
   };
 
@@ -135,6 +137,7 @@ export default function SignInPage() {
         const role = (user?.user_metadata?.role as string) || "buyer";
 
         if (typeof window !== "undefined") {
+          document.cookie = `innoversity_demo_auth=${role}; path=/; max-age=86400; SameSite=Lax`;
           localStorage.setItem(
             "innoversity_user",
             JSON.stringify({
@@ -176,6 +179,7 @@ export default function SignInPage() {
           : "buyer";
 
         if (typeof window !== "undefined") {
+          document.cookie = `innoversity_demo_auth=${role}; path=/; max-age=86400; SameSite=Lax`;
           localStorage.setItem(
             "innoversity_user",
             JSON.stringify({
