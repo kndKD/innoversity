@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
           userId = authData.user.id;
         }
       } else {
-        // Fallback UUID generation for development / demo mode
         userId = crypto.randomUUID();
       }
     }
@@ -66,6 +65,22 @@ export async function POST(request: NextRequest) {
         role: resolvedRole,
       },
     });
+
+    // Ensure wallet exists for this profile
+    try {
+      await prisma.wallet.upsert({
+        where: { userId: profile.id },
+        create: {
+          userId: profile.id,
+          balance: 0,
+          pendingBalance: 0,
+          totalEarned: 0,
+        },
+        update: {},
+      });
+    } catch (walletErr) {
+      console.warn("Wallet init notice:", walletErr);
+    }
 
     const redirectUrl = resolvedRole === "SELLER" ? "/onboarding" : "/buyer/dashboard";
 

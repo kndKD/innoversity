@@ -15,6 +15,7 @@ import {
   X,
   Plus,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 
 interface NavUser {
@@ -43,74 +44,36 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sync Supabase Auth session & local state
-  useEffect(() => {
-    const syncUser = async () => {
-      // 1. Check real Supabase Auth session
-      try {
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser();
-
-        if (authUser) {
+  // Fetch real authenticated user session & role from database
+  const refreshUserSession = async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user) {
           setUser({
-            id: authUser.id,
-            email: authUser.email,
-            fullName:
-              authUser.user_metadata?.full_name ||
-              authUser.user_metadata?.fullName ||
-              authUser.email?.split("@")[0] ||
-              "Buyer",
-            role: authUser.user_metadata?.role || "BUYER",
+            id: data.user.id,
+            email: data.user.email,
+            fullName: data.user.fullName || "Member",
+            role: (data.user.role || "BUYER").toUpperCase(),
           });
           return;
         }
-      } catch (err) {
-        // Supabase error / offline fallback
       }
+    } catch (err) {
+      console.error("Navbar session sync error:", err);
+    }
+    setUser(null);
+  };
 
-      // 2. Fallback to localStorage
-      if (typeof window !== "undefined") {
-        const stored = localStorage.getItem("innoversity_user");
-        if (stored) {
-          try {
-            const parsed = JSON.parse(stored);
-            setUser({
-              id: parsed.id,
-              email: parsed.email,
-              fullName: parsed.full_name || parsed.fullName || "Buyer",
-              role: parsed.role || "BUYER",
-            });
-            return;
-          } catch {}
-        }
-      }
+  useEffect(() => {
+    refreshUserSession();
 
-      setUser(null);
-    };
-
-    syncUser();
-
-    // Listen to real-time Supabase Auth state changes
+    // Listen to Supabase Auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          fullName:
-            session.user.user_metadata?.full_name ||
-            session.user.user_metadata?.fullName ||
-            session.user.email?.split("@")[0] ||
-            "Buyer",
-          role: session.user.user_metadata?.role || "BUYER",
-        });
-      } else {
-        if (typeof window !== "undefined" && !localStorage.getItem("innoversity_user")) {
-          setUser(null);
-        }
-      }
+    } = supabase.auth.onAuthStateChange(() => {
+      refreshUserSession();
     });
 
     return () => {
@@ -125,15 +88,15 @@ export default function Navbar() {
       console.error("Sign out error:", e);
     }
 
+    try {
+      await fetch("/api/auth/signout", { method: "POST" });
+    } catch {}
+
     if (typeof window !== "undefined") {
       document.cookie =
         "innoversity_demo_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       localStorage.removeItem("innoversity_user");
     }
-
-    try {
-      await fetch("/api/auth/signout", { method: "POST" });
-    } catch {}
 
     setUser(null);
     setMobileMenuOpen(false);
@@ -141,14 +104,32 @@ export default function Navbar() {
     router.refresh();
   };
 
+  const isBuyer = user?.role === "BUYER";
+
   const mobileNavItems = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Search, label: "Search", href: "/innovations" },
-    { icon: Plus, label: "Sell", href: "/list-innovation", isPrimary: true },
+    ...(isBuyer
+      ? [
+          {
+            icon: LayoutDashboard,
+            label: "Dashboard",
+            href: "/buyer/dashboard",
+            isPrimary: true,
+          },
+        ]
+      : [
+          {
+            icon: Plus,
+            label: "Sell",
+            href: "/list-innovation",
+            isPrimary: true,
+          },
+        ]),
     {
       icon: Package,
       label: "Orders",
-      href: user ? "/buyer/dashboard" : "/orders/ORD-2026-01",
+      href: user ? "/buyer/dashboard" : "/signin",
     },
     {
       icon: User,
@@ -193,24 +174,17 @@ export default function Navbar() {
 
             {/* CTA / User Profile Buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/list-innovation"
-                id="navbar-sell-cta"
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200"
-              >
-                List Innovation
-              </Link>
-
-              {user ? (
+              {/* When Logged in as BUYER: HIDE List Innovation, Sign In, and Get Started */}
+              {isBuyer ? (
                 <>
-                  {/* My Orders Button */}
+                  {/* My Dashboard CTA */}
                   <Link
                     href="/buyer/dashboard"
-                    id="navbar-my-orders-cta"
+                    id="navbar-my-dashboard-cta"
                     className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
                   >
-                    <Package size={16} className="text-indigo-600" />
-                    <span>My Orders</span>
+                    <LayoutDashboard size={16} className="text-indigo-600" />
+                    <span>My Dashboard</span>
                   </Link>
 
                   {/* Buyer Avatar & Full Name */}
@@ -218,7 +192,7 @@ export default function Navbar() {
                     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-black text-xs flex items-center justify-center uppercase shadow-sm">
                       {user.fullName ? user.fullName.charAt(0) : "B"}
                     </div>
-                    <span className="text-xs font-bold text-slate-800 max-w-[120px] truncate">
+                    <span className="text-xs font-bold text-slate-800 max-w-[140px] truncate">
                       {user.fullName || "Buyer"}
                     </span>
                   </div>
@@ -235,8 +209,54 @@ export default function Navbar() {
                     <span>Sign Out</span>
                   </button>
                 </>
-              ) : (
+              ) : user ? (
+                /* Other Logged In Role (e.g. SELLER) */
                 <>
+                  <Link
+                    href="/list-innovation"
+                    id="navbar-sell-cta"
+                    className="px-4 py-2 rounded-lg text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200"
+                  >
+                    List Innovation
+                  </Link>
+
+                  <Link
+                    href={user.role === "SELLER" ? "/seller/dashboard" : "/verifiers"}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
+                  >
+                    <LayoutDashboard size={16} className="text-indigo-600" />
+                    <span>Dashboard</span>
+                  </Link>
+
+                  <div className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-slate-100 border border-slate-200/80">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-black text-xs flex items-center justify-center uppercase shadow-sm">
+                      {user.fullName ? user.fullName.charAt(0) : "U"}
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 max-w-[140px] truncate">
+                      {user.fullName}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all duration-200 cursor-pointer"
+                    title="Sign Out"
+                  >
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
+                  </button>
+                </>
+              ) : (
+                /* Unauthenticated View */
+                <>
+                  <Link
+                    href="/list-innovation"
+                    id="navbar-sell-cta"
+                    className="px-4 py-2 rounded-lg text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200"
+                  >
+                    List Innovation
+                  </Link>
                   <Link
                     href="/signin"
                     id="navbar-login-cta"
@@ -273,7 +293,7 @@ export default function Navbar() {
             {user && (
               <div className="flex items-center gap-2.5 px-3 py-2.5 mb-2 rounded-xl bg-slate-50 border border-slate-200/80">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-black text-sm flex items-center justify-center uppercase">
-                  {user.fullName ? user.fullName.charAt(0) : "B"}
+                  {user.fullName ? user.fullName.charAt(0) : "U"}
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-slate-900">{user.fullName}</span>
@@ -294,22 +314,38 @@ export default function Navbar() {
             ))}
 
             <div className="pt-2 flex flex-col gap-2">
-              <Link
-                href="/list-innovation"
-                className="w-full text-center py-3 rounded-xl text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                List Innovation
-              </Link>
-
-              {user ? (
+              {isBuyer ? (
                 <>
                   <Link
                     href="/buyer/dashboard"
                     className="w-full text-center py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all shadow-sm"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    My Orders / Dashboard
+                    My Dashboard
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full py-3 rounded-xl text-sm font-semibold text-rose-600 border border-rose-200 hover:bg-rose-50 transition-all cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : user ? (
+                <>
+                  <Link
+                    href="/list-innovation"
+                    className="w-full text-center py-3 rounded-xl text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-all"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    List Innovation
+                  </Link>
+                  <Link
+                    href={user.role === "SELLER" ? "/seller/dashboard" : "/verifiers"}
+                    className="w-full text-center py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all shadow-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Dashboard
                   </Link>
                   <button
                     type="button"
@@ -321,6 +357,13 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
+                  <Link
+                    href="/list-innovation"
+                    className="w-full text-center py-3 rounded-xl text-sm font-semibold text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-all"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    List Innovation
+                  </Link>
                   <Link
                     href="/signin"
                     className="w-full text-center py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all"

@@ -9,8 +9,7 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL || "https://innoversity-project.supabase.co";
   const supabaseAnonKey =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy_anon_key_for_development";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
@@ -33,7 +32,7 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protect /buyer/* routes
+  // Protect /buyer/* routes - strictly check real Supabase user
   if (pathname.startsWith("/buyer")) {
     let isAuthenticated = false;
 
@@ -46,13 +45,7 @@ export async function middleware(request: NextRequest) {
         isAuthenticated = true;
       }
     } catch {
-      // Supabase call fallback
-    }
-
-    // Also check demo cookie fallback
-    const demoCookie = request.cookies.get("innoversity_demo_auth")?.value;
-    if (demoCookie) {
-      isAuthenticated = true;
+      isAuthenticated = false;
     }
 
     if (!isAuthenticated) {
@@ -69,4 +62,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/buyer/:path*"],
 };
-
