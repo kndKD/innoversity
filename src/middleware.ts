@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { parseAdminSessionCookie, ADMIN_COOKIE_NAME } from "@/lib/admin-edge";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -33,7 +34,48 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protect /buyer/* routes - strictly check authenticated buyer session
+  // ── 1. Dedicated High-Security Admin Portal Protection ─────────────────────
+  // A. Protect Admin APIs (except /api/admin/auth/*)
+  if (pathname.startsWith("/api/admin")) {
+    if (!pathname.startsWith("/api/admin/auth")) {
+      const adminCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
+      const adminSession = adminCookie ? parseAdminSessionCookie(adminCookie) : null;
+
+      if (!adminSession) {
+        return NextResponse.json(
+          { success: false, error: "Access denied. Valid admin 2FA session required." },
+          { status: 401 }
+        );
+      }
+    }
+  }
+
+  // B. Protect Admin Dashboard UI
+  if (pathname.startsWith("/admin/dashboard")) {
+    const adminCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
+    const adminSession = adminCookie ? parseAdminSessionCookie(adminCookie) : null;
+
+    if (!adminSession) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/admin";
+      redirectUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // C. Auto-redirect logged-in admin from /admin login page directly to /admin/dashboard
+  if (pathname === "/admin") {
+    const adminCookie = request.cookies.get(ADMIN_COOKIE_NAME)?.value;
+    const adminSession = adminCookie ? parseAdminSessionCookie(adminCookie) : null;
+
+    if (adminSession) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/admin/dashboard";
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // ── 2. Buyer Route Protection ──────────────────────────────────────────────
   if (pathname.startsWith("/buyer")) {
     let isAuthenticated = false;
 
@@ -75,5 +117,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/buyer/:path*"],
+  matcher: [
+    "/buyer/:path*",
+    "/admin",
+    "/admin/:path*",
+    "/api/admin/:path*",
+  ],
 };
