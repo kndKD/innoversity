@@ -82,6 +82,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, innovations: formatted });
   } catch (err: any) {
+    if (
+      err?.digest === "HANGING_PROMISE_REJECTION" ||
+      err?.digest === "NEXT_PRERENDER_INTERRUPTED" ||
+      err?.message?.includes("bail out of prerendering") ||
+      err?.message?.includes("During prerendering")
+    ) {
+      throw err;
+    }
     console.error("[API_ERROR] GET /api/admin/innovations:", err);
     return NextResponse.json(
       { success: false, error: "Something went wrong. Please try again later." },
