@@ -28,8 +28,11 @@ export async function GET(request: NextRequest) {
       isSuperAdmin: isCurrentSuperAdmin,
     });
   } catch (err: any) {
-    console.error("[ADMIN-TEAM-GET-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] GET /api/admin/team:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 
@@ -181,8 +184,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: false, error: "Invalid action." }, { status: 400 });
   } catch (err: any) {
-    console.error("[ADMIN-TEAM-POST-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] POST /api/admin/team:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 

@@ -153,9 +153,9 @@ export async function POST(request: NextRequest) {
       message: "Credentials verified. 6-digit verification code sent to your registered email.",
     });
   } catch (err: any) {
-    console.error("[ADMIN-LOGIN-FATAL] Unexpected error:", err);
+    console.error("[API_ERROR] POST /api/admin/auth/login:", err);
     return NextResponse.json(
-      { success: false, error: "Authentication service encountered an unexpected error." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

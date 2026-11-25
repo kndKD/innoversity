@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (err: any) {
-    console.error("[SIGNIN-FATAL] Unexpected error in /api/auth/signin:", err);
+    console.error("[API_ERROR] POST /api/auth/signin:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to authenticate." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

@@ -82,8 +82,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, innovations: formatted });
   } catch (err: any) {
-    console.error("[ADMIN-INNOVATIONS-GET-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] GET /api/admin/innovations:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 
@@ -134,8 +137,11 @@ export async function POST(request: NextRequest) {
       status: targetStatus,
     });
   } catch (err: any) {
-    console.error("[ADMIN-INNOVATIONS-POST-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] POST /api/admin/innovations:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 

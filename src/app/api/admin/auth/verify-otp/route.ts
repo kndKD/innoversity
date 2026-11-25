@@ -152,9 +152,9 @@ export async function POST(request: NextRequest) {
     console.log(`[ADMIN-2FA-SUCCESS] Admin session granted for ${cleanEmail} (Role: ${userRole})`);
     return response;
   } catch (err: any) {
-    console.error("[ADMIN-VERIFY-OTP-FATAL] Unexpected error:", err);
+    console.error("[API_ERROR] POST /api/admin/auth/verify-otp:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to verify 2FA code." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

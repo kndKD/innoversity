@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
       notification: newNotification,
     });
   } catch (err: any) {
-    console.error("Verifier notification error:", err);
+    console.error("[API_ERROR] POST /api/notifications/verifier:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to dispatch verifier notification email." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

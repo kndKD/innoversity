@@ -178,11 +178,11 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err: any) {
-    console.error("verify-otp error:", err);
+    console.error("[API_ERROR] POST /api/auth/verify-otp:", err);
     return NextResponse.json(
       {
         success: false,
-        error: err.message || "Failed to verify code. Please try again.",
+        error: "Something went wrong. Please try again later.",
       },
       { status: 500 }
     );

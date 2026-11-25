@@ -66,9 +66,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err: any) {
-    console.error("[ADMIN-STATS-ERROR]:", err);
+    console.error("[API_ERROR] GET /api/admin/dashboard/stats:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to load dashboard statistics." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

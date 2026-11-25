@@ -19,8 +19,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, logs });
   } catch (err: any) {
-    console.error("[ADMIN-LOGS-GET-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] GET /api/admin/audit-logs:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 

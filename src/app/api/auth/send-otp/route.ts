@@ -119,11 +119,11 @@ export async function POST(request: NextRequest) {
       expiresInSeconds: 120,
     });
   } catch (err: any) {
-    console.error(`[AUTH-OTP-FATAL] Error in send-otp:`, err);
+    console.error("[API_ERROR] POST /api/auth/send-otp:", err);
     return NextResponse.json(
       {
         success: false,
-        error: err.message || "Failed to send verification code. Please try again.",
+        error: "Something went wrong. Please try again later.",
       },
       { status: 500 }
     );

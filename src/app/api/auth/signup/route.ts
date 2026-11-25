@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       redirectUrl,
     });
   } catch (err: any) {
-    console.error("Signup API error:", err);
+    console.error("[API_ERROR] POST /api/auth/signup:", err);
 
     // Handle Prisma unique constraint violation (e.g. duplicate email)
     if (err.code === "P2002") {
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, error: err.message || "Internal server error occurred during registration." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

@@ -134,9 +134,9 @@ export async function GET(request: NextRequest) {
     ) {
       throw error;
     }
-    console.error("GET /api/buyer/dashboard error:", error);
+    console.error("[API_ERROR] GET /api/buyer/dashboard:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to load buyer dashboard data." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }
@@ -203,9 +203,9 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   } catch (error: any) {
-    console.error("POST /api/buyer/dashboard error:", error);
+    console.error("[API_ERROR] POST /api/buyer/dashboard:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal server error." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

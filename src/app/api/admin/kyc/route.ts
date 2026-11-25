@@ -28,8 +28,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, profiles });
   } catch (err: any) {
-    console.error("[ADMIN-KYC-GET-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] GET /api/admin/kyc:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 
@@ -94,8 +97,11 @@ export async function POST(request: NextRequest) {
       profile: updated,
     });
   } catch (err: any) {
-    console.error("[ADMIN-KYC-POST-ERROR]:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    console.error("[API_ERROR] POST /api/admin/kyc:", err);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
 

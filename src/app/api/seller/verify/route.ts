@@ -83,9 +83,9 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error) {
-        console.error("Supabase seller_profiles insert error:", error);
+        console.error("[API_ERROR] Supabase seller_profiles insert error:", error);
         return NextResponse.json(
-          { success: false, error: error.message },
+          { success: false, error: "Something went wrong. Please try again later." },
           { status: 500 }
         );
       }
@@ -107,9 +107,9 @@ export async function POST(request: NextRequest) {
       isDemoMode: true,
     });
   } catch (err: any) {
-    console.error("Seller verify POST error:", err);
+    console.error("[API_ERROR] POST /api/seller/verify:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to submit KYC verification." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }
@@ -129,7 +129,8 @@ export async function GET(request: NextRequest) {
         query = query.eq("user_id", userId);
         const { data, error } = await query.single();
         if (error && error.code !== "PGRST116") {
-          return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+          console.error("[API_ERROR] Supabase query error:", error);
+          return NextResponse.json({ success: false, error: "Something went wrong. Please try again later." }, { status: 500 });
         }
         return NextResponse.json({ success: true, data: data || null });
       }
@@ -140,7 +141,8 @@ export async function GET(request: NextRequest) {
 
       const { data, error } = await query.order("submitted_at", { ascending: false });
       if (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        console.error("[API_ERROR] Supabase query error:", error);
+        return NextResponse.json({ success: false, error: "Something went wrong. Please try again later." }, { status: 500 });
       }
       return NextResponse.json({ success: true, data: data || [] });
     }
@@ -158,9 +160,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: profiles, isDemoMode: true });
   } catch (err: any) {
-    console.error("Seller verify GET error:", err);
+    console.error("[API_ERROR] GET /api/seller/verify:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to retrieve verification records." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }
@@ -217,7 +219,8 @@ export async function PATCH(request: NextRequest) {
         .single();
 
       if (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        console.error("[API_ERROR] Supabase update error:", error);
+        return NextResponse.json({ success: false, error: "Something went wrong. Please try again later." }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -258,9 +261,9 @@ export async function PATCH(request: NextRequest) {
       isDemoMode: true,
     });
   } catch (err: any) {
-    console.error("Seller verify PATCH error:", err);
+    console.error("[API_ERROR] PATCH /api/seller/verify:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to update verification status." },
+      { success: false, error: "Something went wrong. Please try again later." },
       { status: 500 }
     );
   }

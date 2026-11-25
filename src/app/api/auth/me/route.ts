@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     ) {
       throw error;
     }
-    console.error("GET /api/auth/me error:", error);
+    console.error("[API_ERROR] GET /api/auth/me:", error);
     return NextResponse.json({ user: null });
   }
 }
